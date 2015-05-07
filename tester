@@ -1,0 +1,14 @@
+#!/bin/bash
+# script to put to a remote machine
+
+printf "Cleaning up the old data..."
+rm tester.dn
+rm result.mat
+printf "done\n"
+
+printf "\nRunning matlab script\n"
+matlab -nodisplay -nojvm -nosplash -nodesktop -r "sumvar(),quit()"
+printf "\nMatlab work done\n"
+
+ > tester.dn
+printf "\ntester.dn file generated\n"
