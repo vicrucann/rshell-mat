@@ -28,6 +28,7 @@ for IPA in ${IPADDRS[@]}; do
 		scp $IFA $LOGIN@$IPA:$PPATH
 	done
 	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PPATH; chmod u+x $REMSCRIPT; nohup ./$REMSCRIPT > tester.out 2> tester.err < /dev/null &'"
+	printf "Launched the shell on remote\n"
 done
 
 printf "\nWaiting for Matlab scripts to terminate\n"
@@ -35,16 +36,16 @@ TLIMIT=50
 count=0
 tot=0
 while [[ $tot -eq 0 ]]; do
-	printf "inside while loop\n"
 	i=0
 	for IPA in ${IPADDRS[@]}; do
-		printf "Connecting to a server...\n"
+		printf "Connecting to a server and checking for files...\n"
 		if [ ${FDONE[$i]} -eq 0 ]; then
 			ssh $LOGIN@${IPADDRS[$i]} "test -e $PPATH/tester.dn"
 			if [ $? -eq 0 ]; then
 				FDONE[$i]=1
-				printf "Server %d obtained result\n" $i
+				printf "Server %d obtained results\n" $i
 			else
+				printf " not ready, pause.\n"
 				sleep $SLEEPTIME
 			fi
 		fi
@@ -67,7 +68,7 @@ while [[ $tot -eq 0 ]]; do
 	done
 done
 
-printf "\nTrying to obtain the result files\n"
+printf "\nCopying the result files\n"
 for IPA in ${IPADDRS[@]}; do
 	printf "\nCreating folder for results from server %s\n" $IPA
 	mkdir -p $IPA
