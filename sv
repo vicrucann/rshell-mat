@@ -21,7 +21,7 @@ for IPA in ${IPADDRS[@]}; do
 	for IFA in ${IFILES[@]}; do
 		scp $IFA $LOGIN@$IPA:$PPATH
 	done
-	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PPATH; nohup ./$REMSCRIPT > tester.out 2> tester.err < /dev/null &'"
+	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PPATH; chmod u+x $REMSCRIPT; nohup ./$REMSCRIPT > tester.out 2> tester.err < /dev/null &'"
 done
 
 printf "\nWaiting for Matlab scripts to terminate\n"
@@ -59,6 +59,8 @@ for IPA in ${IPADDRS[@]}; do
 	mkdir -p $IPA
 	printf "File transfer using scp\n"
 	scp $LOGIN@$IPA:$PPATH/result.mat $IPA
+	scp $LOGIN@$IPA:$PPATH/$REMSCRIPT.out $IPA
+	scp $LOGIN@$IPA:$PPATH/$REMSCRIPT.err $IPA
 done
 
 kill $SSH_AGENT_PID
