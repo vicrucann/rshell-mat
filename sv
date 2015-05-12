@@ -5,11 +5,17 @@ printf "Script to launch different matlab scripts on remote servers in backgroun
 LOGIN=cryo
 PPATH=/home/cryo/tester
 IPADDRS=(172.23.2.105 172.23.5.77)
+NADDRS=${#IPARRDS[@]}
 IFILES=(v1.mat v2.mat)
 REMSCRIPT=tester
 REMMAT=sumvar.m
-FDONE1=0
-FDONE2=0
+for (( i=0; i<${NADDRS}; i++ )); do
+	FDONE[$i]=0
+done
+echo ${FDONE[0]}
+echo ${FDONE[1]}
+
+SLEEPTIME=10
 
 eval `ssh-agent`
 ssh-add
@@ -27,30 +33,34 @@ done
 printf "\nWaiting for Matlab scripts to terminate\n"
 TLIMIT=50
 count=0
-while [[ $FDONE1 -eq 0 || $FDONE2 -eq 0 ]]; do
-	if [ $FDONE1 -eq 0 ]; then
-		ssh $LOGIN@${IPADDRS[0]} "test -e $PPATH/tester.dn"
-		if [ $? -eq 0 ]; then
-			FDONE1=1
-			printf "FDONE1 is positive\n"
-		else
-			sleep 10
+tot=0
+while [[ $tot -eq 0 ]]; do
+	printf "inside while loop\n"
+	for (( i=0; i<${NADDRS}; i++ )); do
+		printf "Connecting to a server...\n"
+		if [ ${FDONE[$i]} -eq 0 ]; then
+			ssh $LOGINE@${IPADDRS[$i]} "test -e $PPATH/tester.dn"
+			if [ $? -eq 0 ]; then
+				FDONE[$i]=1
+				printf "Server %d obtained result\n" $i
+			else
+				sleep $SLEEPTIME
+			fi
 		fi
-	fi
-	if [ $FDONE2 -eq 0 ]; then
-		ssh $LOGIN@${IPADDRS[1]} "test -e $PPATH/tester.dn"
-		if [ $? -eq 0 ]; then
-			FDONE2=1
-			printf "FDONE2 is positive\n"
-		else
-			sleep 10
-		fi
-	fi
+	done
+
 	count=$(($count+1))
 	if [ $count -eq $TLIMIT ]; then
 		printf "Time out - check if requested files exist on remotes\n"
 		exit 0
-	fi	
+	fi
+
+	tot=1
+	for (( i=0; i<${NADDRS}; i++  )); do
+		if [ ${FDONE[$i]} -eq 0 ]; then
+			tot=0
+		fi
+	done
 done
 
 printf "\nTrying to obtain the result files\n"
