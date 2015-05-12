@@ -9,11 +9,11 @@ NADDRS=${#IPARRDS[@]}
 IFILES=(v1.mat v2.mat)
 REMSCRIPT=tester
 REMMAT=sumvar.m
-for (( i=0; i<${NADDRS}; i++ )); do
+i=0
+for IPA in ${IPADDRS[@]}; do
 	FDONE[$i]=0
+	i=$(($i+1))
 done
-echo ${FDONE[0]}
-echo ${FDONE[1]}
 
 SLEEPTIME=10
 
@@ -36,10 +36,11 @@ count=0
 tot=0
 while [[ $tot -eq 0 ]]; do
 	printf "inside while loop\n"
-	for (( i=0; i<${NADDRS}; i++ )); do
+	i=0
+	for IPA in ${IPADDRS[@]}; do
 		printf "Connecting to a server...\n"
 		if [ ${FDONE[$i]} -eq 0 ]; then
-			ssh $LOGINE@${IPADDRS[$i]} "test -e $PPATH/tester.dn"
+			ssh $LOGIN@${IPADDRS[$i]} "test -e $PPATH/tester.dn"
 			if [ $? -eq 0 ]; then
 				FDONE[$i]=1
 				printf "Server %d obtained result\n" $i
@@ -47,6 +48,7 @@ while [[ $tot -eq 0 ]]; do
 				sleep $SLEEPTIME
 			fi
 		fi
+		i=$(($i+1))
 	done
 
 	count=$(($count+1))
@@ -56,10 +58,12 @@ while [[ $tot -eq 0 ]]; do
 	fi
 
 	tot=1
-	for (( i=0; i<${NADDRS}; i++  )); do
+	i=0
+	for IPA in ${IPADDRS[@]} ; do
 		if [ ${FDONE[$i]} -eq 0 ]; then
 			tot=0
 		fi
+		i=$(($i+1))
 	done
 done
 
