@@ -12,6 +12,9 @@ assert(maxIterations>=10, 'maxIterations should be at least 10 times');
 x = linspace( xlim(1), xlim(2), gridSize );
 y = linspace( ylim(1), ylim(2), gridSize );
 [xGrid,yGrid] = meshgrid( x, y );
+
+%------------------------
+
 z0 = xGrid + 1i*yGrid;
 count = ones( size(z0) );
 

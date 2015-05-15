@@ -9,7 +9,7 @@ ipaddrs = ['172.23.2.105' ' ' '172.23.5.77'];
 remmat = ''; % definition given below for each example case
 varmat = ''; % definition given below for each example case
 sleeptime = 10;
-bashscript = fullfile(pwd,'cluster.sh'); % main bash script that organizes data processing
+bashscript = fullfile(pwd,'dserver.sh'); % main bash script that organizes data processing
 
 [ncluster ~] = find(ipaddrs==' '); % to break data into n clusters (as many as given servers)
 ncluster = ncluster+1;
@@ -47,7 +47,10 @@ for i=1:ncluster
     save([varmat int2str(i) '.mat'], 'xi', 'yi', 'iter');
 end
 % assert the mentioned files exist(in bash file)
+if (~exist(bashscript))
+    error('No file found: check the bash script file name');
+end
+system(['chmod u+x ' bashscript])
 cmdStr = [bashscript ' ' login ' ' ppath ' ' ipaddrs ' ' remmat ' ' varmat ' ' int2str(sleeptime)];
 % perform the command
-system(cmdStr);
-
+system(cmdStr)
