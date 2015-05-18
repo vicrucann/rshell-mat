@@ -19,8 +19,8 @@ printf "\nRemote matlab script name: %s\n" $REMMAT
 printf "Input file name: %s\n\n" $IFILE
 
 printf "Cleaning up the old data..."
-rm dserver.dn
-rm result.mat
+rm -f dserver.dn
+rm -f result.mat
 printf "done\n"
 
 printf "\nRunning matlab script\n"
