@@ -5,6 +5,14 @@
 #   Wait for servers to complete.
 #   Collect and merge the results.
 
+printf "The n input arguments for dserver.sh script are: \n"
+printf "[1] LOGIN : login id to the remote servers (assumed it's the same login for every server \n)"
+printf "[2]- PPATH : working directory (will be created if does not exist) on the remote servers; assumed to be the same for each server \n"
+printf "[3..n-3]- IPADDRS : range of ip-addresses of all the servers, assumed they have the same login/psw account \n"
+printf "[n-2]- REMMAT : name of the matlab function that will be copied and launched on remote servers \n"
+printf "[n-1]- VARMAT : name of the workspace varialbes file, in *.mat format; these are the variables to copy and load to matlab memory on the remote servers \n"
+printf "[n]- SLEEPTIME : integer that indicates number of seconds to pause when waiting for each remote server to complete their computations \n"
+
 
 args=("$@")
 printf "Number of arguments passed: %d\n" $#

@@ -22,8 +22,8 @@ remmat = 'sumvar.m';
 % Given resolution and iteration number, find corresponding Mandelbrodt set
 
 % name of matlab function to be run on remote server
-remmat = 'mandelbrodt.m';
-varmat = 'mandelbrodt';
+remmat = 'mandelbrodt.m'; % name of matlab function that will be launched on remote server
+varmat = 'mandelbrodt'; % when splitting data, they will be saved under varmat.mat name on disk
 
 % input parameters
 iter = 500;
