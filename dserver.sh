@@ -117,3 +117,4 @@ for IPA in ${IPADDRS[@]}; do
 done
 
 kill $SSH_AGENT_PID
+printf "\nBash script terminated\n"
