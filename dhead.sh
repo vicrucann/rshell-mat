@@ -7,11 +7,11 @@
 #   dhead.sh - "distributed head server shell".
 
 printf "The n input arguments for dhead.sh script are: \n"
-printf "[1] LOGIN : login id to the remote servers (assumed it's the same login for every server) \n)"
+printf "[1] LOGIN : login id to the remote servers (assumed it's the same login for every server)\n"
 printf "[2]- PPATH : working directory (will be created if does not exist) on the remote servers; assumed to be the same for each server \n"
 printf "[3..n-3]- IPADDRS : range of ip-addresses of all the servers, assumed they have the same login/psw account \n"
-printf "[n-2]- REMMAT : name of the matlab function that will be copied and launched on remote servers by dremote.sh \n"
-printf "[n-1]- VARMAT : name of the workspace varialbes file, in *.mat format; these are the variables to copy and load to matlab memory on the remote servers \n"
+printf "[n-2]- REMMAT : name of the matlab function (e.g. 'myfunc') that will be copied and launched on remote servers by dremote.sh \n"
+printf "[n-1]- VARMAT : name of the workspace varialbes file (without numering and .mat); these are the variables to copy and load to matlab memory on the remote servers \n"
 printf "[n]- SLEEPTIME : integer that indicates number of seconds to pause when waiting for each remote server to complete their computations \n"
 
 
@@ -26,7 +26,9 @@ nservs=$((nargs-5))
 printf "Number of servers: %d\n" $nservs
 
 LOGIN=${args[0]}
+printf "The login parameter: %s\n" LOGIN
 PPATH=${args[1]}
+printf "The remote working directory: %s\n" PPATH
 i=2
 while true; do
 	IPADDRS[$((i-2))]=${args[$i]}
@@ -39,12 +41,13 @@ while true; do
 	fi
 done
 
-REMMAT=${args[$i]} # check file existance
+REMMAT=${args[$nargs-3]} # check file existance
 test -e $REMMAT.m
 if [ $? -ne 0 ]; then
 	printf "ERROR: no such file: %s\n" $REMMAT.m
 	exit 1
 fi
+printf "Matlab script name for remote: %s\n" $REMMAT.m
 
 REMSCRIPT="dserver.sh" # check file existance
 test -e $REMSCRIPT
@@ -53,27 +56,27 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-VARMAT=${args[$(($i+1))]} # check file existance
-test -e $VARMAT.mat
-if [ $? -ne 0 ]; then
-	printf "ERROR: no such file: %s\n" $REMMAT.mat
-	exit 1
-fi
-
-SLEEPTIME=${args[$(($i+2))]}
-printf "Finished reading the input arguments\n"
-sleep 3
-
+VARMAT=${args[$(($nargs-2))]} # check file existance
+j=1
 i=0
-m=".mat"
 for IPA in ${IPADDRS[@]}; do
+	test -e $VARMAT$j.mat
+	if [ $? -ne 0 ]; then
+		printf "ERROR: no such file: %s\n" $VARMAT$j.mat
+		exit 1
+	fi
 	FDONE[$i]=0
-	j=$((i+1))
-	IFILES[$i]="$VARMAT$j$m"
+	IFILES[$i]="$VARMAT$j.mat"
+	j=$((j+1))
 	i=$((i+1))
 done
 printf "\nVariables-to-load extracted:\n"
 echo ${IFILES[@]}
+
+SLEEPTIME=${args[$(($nargs-1))]}
+printf "Pause time is set to %i\n" $SLEEPTIME
+printf "\nFinished reading the input arguments\n"
+sleep 3
 
 eval `ssh-agent`
 ssh-add
