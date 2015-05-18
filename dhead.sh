@@ -91,8 +91,6 @@ sleep 3
 eval `ssh-agent`
 ssh-add
 i=0
-o=".out"	
-e=".err"
 for IPA in ${IPADDRS[@]}; do
 	printf "\nFile transfer using scp\n"
 	ssh $LOGIN@$IPA "mkdir -p $PPATH"
@@ -100,7 +98,7 @@ for IPA in ${IPADDRS[@]}; do
 	scp $REMMAT.m $LOGIN@$IPA:$PPATH # copy remote matlab function
 	scp ${IFILES[$i]} $LOGIN@$IPA:$PPATH # copy data file
 	
-	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PPATH; chmod u+x $REMSCRIPT; nohup ./$REMSCRIPT $REMMAT ${IFILES[$i]} > $VARMAT$o 2> $VARMAT$e < /dev/null &'"
+	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PPATH; chmod u+x $REMSCRIPT; nohup ./$REMSCRIPT $REMMAT ${IFILES[$i]} > $VARMAT.out 2> $VARMAT.err < /dev/null &'"
 	printf "Launched the shell on remote\n"
 	i=$((i+1))
 done
@@ -154,8 +152,8 @@ for IPA in ${IPADDRS[@]}; do
 	mkdir -p $IPA
 	printf "File transfer using scp\n"
 	scp $LOGIN@$IPA:$PPATH/result.mat $IPA
-	scp $LOGIN@$IPA:$PPATH/$VARMAT$o $IPA
-	scp $LOGIN@$IPA:$PPATH/$VARMAT$e $IPA
+	scp $LOGIN@$IPA:$PPATH/$VARMAT.out $IPA
+	scp $LOGIN@$IPA:$PPATH/$VARMAT.err $IPA
 done
 
 kill $SSH_AGENT_PID
