@@ -4,8 +4,10 @@ function [x, y, count] = mandelbrodt( fname )
 %   matlab big data processing
 %   2015 vicrucann@gmail.com
 
+fprintf('The data file provided: %s\n', fname);
+
 load(fname);
-xGrid=xi
+xGrid=xi;
 yGrid=yi;
 maxIterations=iter;
 %------------------------

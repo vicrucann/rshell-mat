@@ -3,8 +3,9 @@
 % matricies summation
 
 %% Setting up
+clc; clear; 
 login = 'cryo';
-ppath = '/home/cryo/tester';
+ppath = '/home/cryo/dop'; % distributed operations
 ipaddrs = ['172.23.2.105' ' ' '172.23.5.77'];
 remmat = ''; % definition given below for each example case
 varmat = ''; % definition given below for each example case
@@ -23,7 +24,7 @@ remmat = 'sumvar.m';
 
 % name of matlab function to be run on remote server
 remmat = 'mandelbrodt'; % name of matlab function that will be launched on remote server
-varmat = 'mandelbrodt'; % when splitting data, they will be saved under varmat.mat name on disk
+varmat = 'mnd'; % when splitting data, they will be saved under varmat.mat name on disk
 
 % input parameters
 iter = 500;

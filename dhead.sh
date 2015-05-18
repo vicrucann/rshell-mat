@@ -66,11 +66,9 @@ for IPA in ${IPADDRS[@]}; do
 	printf "\nFile transfer using scp\n"
 	ssh $LOGIN@$IPA "mkdir -p $PPATH"
 	scp $REMSCRIPT $LOGIN@$IPA:$PPATH # copy rserver.sh
-	scp $REMMAT $LOGIN@$IPA:$PPATH # copy remote matlab function
+	scp $REMMAT.m $LOGIN@$IPA:$PPATH # copy remote matlab function
 	scp ${IFILES[$i]} $LOGIN@$IPA:$PPATH # copy data file
-#for IFA in ${IFILES[@]}; do
-#	scp $IFA $LOGIN@$IPA:$PPATH # copy data file(-s)
-#done
+	
 	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PPATH; chmod u+x $REMSCRIPT; nohup ./$REMSCRIPT $REMMAT ${IFILES[$i]} > $VARMAT$o 2> $VARMAT$e < /dev/null &'"
 	printf "Launched the shell on remote\n"
 	i=$((i+1))

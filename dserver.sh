@@ -7,23 +7,26 @@
 
 args=("$@")
 nargs=$#
-if ( nargs -ne 2 ); then
+if [ $nargs -ne 2 ]; then
 	printf "ERROR: Number of passed parameters must be equal 2\n"
 	exit 1
-done
+fi
 
 REMMAT=${args[0]}
 IFILE=${args[1]}
 
+printf "\nRemote matlab script name: %s\n" $REMMAT
+printf "Input file name: %s\n\n" $IFILE
+
 printf "Cleaning up the old data..."
-rm *.dn
-rm *.mat
+rm dserver.dn
+rm result.mat
 printf "done\n"
 
-printf "\Running matlab script\n"
-matlab -nodisplay -nojvm -nosplash -nodesktop -r "$REMMAT($IFILE),quit()"
+printf "\nRunning matlab script\n"
+matlab -nodisplay -nojvm -nosplash -nodesktop -r "$REMMAT('$IFILE'),quit()"
 printf "\nMatlab work done\n"
 
 > dserver.dn
-printf "\n*.dn file generated\n"
+printf "\nresult.dn file generated\n"
 
