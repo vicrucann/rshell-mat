@@ -10,7 +10,7 @@ printf "The n input arguments for dhead.sh script are: \n"
 printf "[1] LOGIN : login id to the remote servers (assumed it's the same login for every server) \n)"
 printf "[2]- PPATH : working directory (will be created if does not exist) on the remote servers; assumed to be the same for each server \n"
 printf "[3..n-3]- IPADDRS : range of ip-addresses of all the servers, assumed they have the same login/psw account \n"
-printf "[n-2]- REMMAT : name of the matlab function (without .m) that will be copied and launched on remote servers by dremote.sh \n"
+printf "[n-2]- REMMAT : name of the matlab function that will be copied and launched on remote servers by dremote.sh \n"
 printf "[n-1]- VARMAT : name of the workspace varialbes file, in *.mat format; these are the variables to copy and load to matlab memory on the remote servers \n"
 printf "[n]- SLEEPTIME : integer that indicates number of seconds to pause when waiting for each remote server to complete their computations \n"
 
@@ -39,9 +39,27 @@ while true; do
 	fi
 done
 
-REMMAT=${args[$i]}
-REMSCRIPT="dserver.sh"
-VARMAT=${args[$(($i+1))]}
+REMMAT=${args[$i]} # check file existance
+test -e $REMMAT.m
+if [ $? -ne 0 ]; then
+	printf "ERROR: no such file: %s\n" $REMMAT.m
+	exit 1
+fi
+
+REMSCRIPT="dserver.sh" # check file existance
+test -e $REMSCRIPT
+if [ $? -ne 0 ]; then
+	printf "ERROR: no such file: %s\n" $REMSCRIPT
+	exit 1
+fi
+
+VARMAT=${args[$(($i+1))]} # check file existance
+test -e $VARMAT.mat
+if [ $? -ne 0 ]; then
+	printf "ERROR: no such file: %s\n" $REMMAT.mat
+	exit 1
+fi
+
 SLEEPTIME=${args[$(($i+2))]}
 printf "Finished reading the input arguments\n"
 sleep 3
