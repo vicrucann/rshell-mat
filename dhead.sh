@@ -4,12 +4,13 @@
 #   Transfer the data and "kernel" function to the servers. 
 #   Wait for servers to complete.
 #   Collect and merge the results.
+#   dhead.sh - "distributed head server shell".
 
-printf "The n input arguments for dserver.sh script are: \n"
+printf "The n input arguments for dhead.sh script are: \n"
 printf "[1] LOGIN : login id to the remote servers (assumed it's the same login for every server) \n)"
 printf "[2]- PPATH : working directory (will be created if does not exist) on the remote servers; assumed to be the same for each server \n"
 printf "[3..n-3]- IPADDRS : range of ip-addresses of all the servers, assumed they have the same login/psw account \n"
-printf "[n-2]- REMMAT : name of the bash script that launches corresponding matlab script; both will be copied and launched on remote servers \n"
+printf "[n-2]- REMMAT : name of the matlab function (without .m) that will be copied and launched on remote servers by dremote.sh \n"
 printf "[n-1]- VARMAT : name of the workspace varialbes file, in *.mat format; these are the variables to copy and load to matlab memory on the remote servers \n"
 printf "[n]- SLEEPTIME : integer that indicates number of seconds to pause when waiting for each remote server to complete their computations \n"
 
@@ -39,17 +40,18 @@ while true; do
 done
 
 REMMAT=${args[$i]}
+REMSCRIPT="dserver.sh"
 VARMAT=${args[$(($i+1))]}
 SLEEPTIME=${args[$(($i+2))]}
 printf "Finished reading the input arguments\n"
 sleep 3
 
 i=0
+m=".mat"
 for IPA in ${IPADDRS[@]}; do
 	FDONE[$i]=0
-	e=".mat"
 	j=$((i+1))
-	IFILES[$i]="$VARMAT$j$e"
+	IFILES[$i]="$VARMAT$j$m"
 	i=$((i+1))
 done
 printf "\nVariables-to-load extracted:\n"
@@ -57,16 +59,21 @@ echo ${IFILES[@]}
 
 eval `ssh-agent`
 ssh-add
+i=0
+o=".out"	
+e=".err"
 for IPA in ${IPADDRS[@]}; do
 	printf "\nFile transfer using scp\n"
 	ssh $LOGIN@$IPA "mkdir -p $PPATH"
-	scp $REMSCRIPT $LOGIN@$IPA:$PPATH
-	scp $REMMAT $LOGIN@$IPA:$PPATH
-	for IFA in ${IFILES[@]}; do
-		scp $IFA $LOGIN@$IPA:$PPATH
-	done
-	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PPATH; chmod u+x $REMSCRIPT; nohup ./$REMSCRIPT > tester.out 2> tester.err < /dev/null &'"
+	scp $REMSCRIPT $LOGIN@$IPA:$PPATH # copy rserver.sh
+	scp $REMMAT $LOGIN@$IPA:$PPATH # copy remote matlab function
+	scp ${IFILES[$i]} $LOGIN@$IPA:$PPATH # copy data file
+#for IFA in ${IFILES[@]}; do
+#	scp $IFA $LOGIN@$IPA:$PPATH # copy data file(-s)
+#done
+	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PPATH; chmod u+x $REMSCRIPT; nohup ./$REMSCRIPT $REMMAT ${IFILES[$i]} > $VARMAT$o 2> $VARMAT$e < /dev/null &'"
 	printf "Launched the shell on remote\n"
+	i=$((i+1))
 done
 
 printf "\nWaiting for Matlab scripts to terminate\n"
@@ -78,7 +85,7 @@ while [[ $tot -eq 0 ]]; do
 	for IPA in ${IPADDRS[@]}; do
 		printf "Connecting to a server and checking for files...\n"
 		if [ ${FDONE[$i]} -eq 0 ]; then
-			ssh $LOGIN@${IPADDRS[$i]} "test -e $PPATH/tester.dn"
+			ssh $LOGIN@${IPADDRS[$i]} "test -e $PPATH/$REMMAT.dn" # check if *.dn file was generated
 			if [ $? -eq 0 ]; then
 				FDONE[$i]=1
 				printf "Server %d obtained results\n" $i
@@ -107,13 +114,14 @@ while [[ $tot -eq 0 ]]; do
 done
 
 printf "\nCopying the result files\n"
+r="_res"
 for IPA in ${IPADDRS[@]}; do
 	printf "\nCreating folder for results from server %s\n" $IPA
 	mkdir -p $IPA
 	printf "File transfer using scp\n"
-	scp $LOGIN@$IPA:$PPATH/result.mat $IPA
-	scp $LOGIN@$IPA:$PPATH/$REMSCRIPT.out $IPA
-	scp $LOGIN@$IPA:$PPATH/$REMSCRIPT.err $IPA
+	scp $LOGIN@$IPA:$PPATH/$REMMAT$r$m $IPA
+	scp $LOGIN@$IPA:$PPATH/$VARMAT$o $IPA
+	scp $LOGIN@$IPA:$PPATH/$VARMAT$e $IPA
 done
 
 kill $SSH_AGENT_PID
