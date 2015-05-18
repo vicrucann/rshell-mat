@@ -6,6 +6,9 @@
 #   Collect and merge the results.
 #   dhead.sh - "distributed head server shell".
 
+# HEADER INSTRUCTIONS
+# ================
+
 printf "The n input arguments for dhead.sh script are: \n"
 printf "[1] LOGIN : login id to the remote servers (assumed it's the same login for every server)\n"
 printf "[2]- PPATH : working directory (will be created if does not exist) on the remote servers; assumed to be the same for each server \n"
@@ -14,6 +17,9 @@ printf "[n-2]- REMMAT : name of the matlab function (e.g. 'myfunc') that will be
 printf "[n-1]- VARMAT : name of the workspace varialbes file (without numering and .mat); these are the variables to copy and load to matlab memory on the remote servers \n"
 printf "[n]- SLEEPTIME : integer that indicates number of seconds to pause when waiting for each remote server to complete their computations \n"
 
+
+# ARGUMENTS PARSING
+# ================
 
 args=("$@")
 printf "\nNumber of arguments passed: %d\n" $#
@@ -26,20 +32,20 @@ nservs=$((nargs-5))
 printf "Number of servers: %d\n" $nservs
 
 LOGIN=${args[0]}
-printf "The login parameter: %s\n" LOGIN
+printf "The login parameter: %s\n" $LOGIN
 PPATH=${args[1]}
-printf "The remote working directory: %s\n" PPATH
+printf "The remote working directory: %s\n" $PPATH
 i=2
 while true; do
 	IPADDRS[$((i-2))]=${args[$i]}
 	i=$((i+1))
 	nservs=$((nservs-1))
 	if (( nservs <= 0 )); then
-		printf "\nIP addresses extracted:\n"
-		echo ${IPADDRS[@]} 
 		break
 	fi
 done
+printf "\nIP addresses extracted:\n"
+echo ${IPADDRS[@]}
 
 REMMAT=${args[$nargs-3]} # check file existance
 test -e $REMMAT.m
@@ -47,7 +53,7 @@ if [ $? -ne 0 ]; then
 	printf "ERROR: no such file: %s\n" $REMMAT.m
 	exit 1
 fi
-printf "Matlab script name for remote: %s\n" $REMMAT.m
+printf "Matlab script file for remote: %s\n" $REMMAT.m
 
 REMSCRIPT="dserver.sh" # check file existance
 test -e $REMSCRIPT
@@ -55,6 +61,7 @@ if [ $? -ne 0 ]; then
 	printf "ERROR: no such file: %s\n" $REMSCRIPT
 	exit 1
 fi
+printf "Remote bash script: %s\n" $REMSCRIPT
 
 VARMAT=${args[$(($nargs-2))]} # check file existance
 j=1
@@ -78,6 +85,9 @@ printf "Pause time is set to %i\n" $SLEEPTIME
 printf "\nFinished reading the input arguments\n"
 sleep 3
 
+# CONNECT TO REMOTES, SCP FILES, LAUNCH REMOTE BASH
+# ================
+
 eval `ssh-agent`
 ssh-add
 i=0
@@ -94,6 +104,9 @@ for IPA in ${IPADDRS[@]}; do
 	printf "Launched the shell on remote\n"
 	i=$((i+1))
 done
+
+# WAIT LOOP FOR MATLAB FUNCTION ON REMOTE TO TERMINATE
+# ================
 
 printf "\nWaiting for Matlab scripts to terminate\n"
 TLIMIT=50
@@ -131,6 +144,9 @@ while [[ $tot -eq 0 ]]; do
 		i=$(($i+1))
 	done
 done
+
+# SCP FROM REMOTES TO LOCAL THE RESULT DATA
+# ================
 
 printf "\nCopying the result files\n"
 for IPA in ${IPADDRS[@]}; do
