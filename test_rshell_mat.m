@@ -9,7 +9,7 @@ ipaddrs = ['172.23.2.105' ' ' '172.23.5.77'];
 remmat = ''; % definition given below for each example case
 varmat = ''; % definition given below for each example case
 sleeptime = 10;
-bashscript = fullfile(pwd,'dserver.sh'); % main bash script that organizes data processing
+bashscript = fullfile(pwd,'dhead.sh'); % main bash script that organizes data processing
 
 [ncluster ~] = find(ipaddrs==' '); % to break data into n clusters (as many as given servers)
 ncluster = ncluster+1;
@@ -22,7 +22,7 @@ remmat = 'sumvar.m';
 % Given resolution and iteration number, find corresponding Mandelbrodt set
 
 % name of matlab function to be run on remote server
-remmat = 'mandelbrodt.m'; % name of matlab function that will be launched on remote server
+remmat = 'mandelbrodt'; % name of matlab function that will be launched on remote server
 varmat = 'mandelbrodt'; % when splitting data, they will be saved under varmat.mat name on disk
 
 % input parameters
