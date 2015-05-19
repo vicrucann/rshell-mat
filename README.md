@@ -21,7 +21,7 @@ system(cmdstr); % will perform the command above
 Where  
 `login` is a login id, in a string format, e.g.: `login = 'localu';`.   
 
-`path` is a workspace path on remote servers (if the folder does not exist, it will be created), e.g.: `path = /home/remoteu/tmp`.   
+`path` is a workspace path on remote servers (if the folder does not exist, it will be created), e.g.: `path = '/home/remoteu/tmp'`.   
 
 `ipaddrs` is a list of IP addresses, in a string format; it has a form of `['ipsddrs1' ' ' 'ipsddrs2' ' ' ...]` - each IP address must be separated by **one** space character from its neighbors.  
  
