@@ -19,17 +19,20 @@ ncluster = ncluster+1;
 % Given resolution and iteration number, find corresponding Mandelbrot set
 
 % input parameters
-iter = 500;
-isize = 1000;
+iter = 2000;
+isize = 4000;
 xlim = [-2, 1]; % to split
 ylim = [-1.5, 1.5]; % to split
+figpos = [100 100 2000 2000];
+
+% pre-calcualtion
 x = linspace( xlim(1), xlim(2), isize );
 y = linspace( ylim(1), ylim(2), isize );
 [xGrid,yGrid] = meshgrid( x, y );
 szx = ceil(size(xGrid,2)/ncluster);
 
 % perform the full calculation of mandelbrot on local
-fprintf('Calculation on local...');
+fprintf('Calculation on local...\n');
 tic();
 z0 = xGrid + 1i*yGrid;
 count0 = ones( size(z0) );
@@ -38,15 +41,20 @@ for n = 0:iter
     z = z.*z + z0;
     inside = abs( z )<=2;
     count0 = count0 + inside;
+    if (mod(n, iter*0.25) == 0)
+        fprintf('%i', ceil(n/iter*100));
+    elseif (mod(n,iter*0.05) == 0)
+        fprintf('.');
+    end
 end
 count0 = log( count0 );
 tlocal=toc();
-fprintf( 'done\n');
+fprintf( ' -> done\n');
 
 % display local result
 figure;
 fig = gcf;
-fig.Position = [200 200 600 600];
+fig.Position = figpos;
 imagesc( x, y, count0 );
 axis image
 colormap( [jet();flipud( jet() );0 0 0] );
@@ -87,7 +95,7 @@ fprintf('\n\nLocal time vs distributed time: \n    %1.2fsecs vs %1.2fsecs \n', t
 % display distributed result
 figure;
 fig = gcf;
-fig.Position = [200 200 600 600];
+fig.Position = figpos;
 imagesc( x, y, res );
 axis image
 colormap( [jet();flipud( jet() );0 0 0] );
