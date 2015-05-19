@@ -1,9 +1,9 @@
 %% Example of matlab scrips that launches bash script to control data parallelization among servers
-% Two examples are considered: calculation of madelbrodt set and two
+% Two examples are considered: calculation of madelbrot set and two
 % matricies summation
 
 %% Setting up
-clc; clear; 
+clc; clear; close all;
 login = 'cryo';
 ppath = '/home/cryo/dop'; % distributed operations
 ipaddrs = ['172.23.2.105' ' ' '172.23.5.77'];
@@ -25,12 +25,13 @@ remmat = 'sumvar.m';
 % name of matlab function to be run on remote server
 remmat = 'mandelbrodt'; % name of matlab function that will be launched on remote server
 varmat = 'mnd'; % when splitting data, they will be saved under varmat.mat name on disk
+resfold = 'dres'; % name of the result folder
 
 % input parameters
 iter = 500;
 isize = 1000;
-xlim = [-2, 1]; % to split
-ylim = [-1.5, 1.5]; % to split
+xlim = [-0.748766713922161, -0.748766707771757];%[-2, 1]; % to split
+ylim = [ 0.123640844894862,  0.123640851045266];%[-1.5, 1.5]; % to split
 x = linspace( xlim(1), xlim(2), isize );
 y = linspace( ylim(1), ylim(2), isize );
 [xGrid,yGrid] = meshgrid( x, y );
@@ -47,11 +48,23 @@ for i=1:ncluster
     end
     save([varmat int2str(i) '.mat'], 'xi', 'yi', 'iter');
 end
-% assert the mentioned files exist(in bash file)
-if (~exist(bashscript))
-    error('No file found: check the bash script file name');
-end
 system(['chmod u+x ' bashscript])
-cmdStr = [bashscript ' ' login ' ' ppath ' ' ipaddrs ' ' remmat ' ' varmat ' ' int2str(sleeptime)];
+cmdStr = [bashscript ' ' login ' ' ppath ' ' ipaddrs ' ' remmat ' ' varmat ' ' int2str(sleeptime) ' ' resfold];
 % perform the command
 system(cmdStr)
+
+% merge the results
+res = zeros(isize, isize);
+for i=1:ncluster
+    load([resfold '/' 'result_' varmat int2str(i) '.mat']);
+    if (i ~= ncluster)
+        res(:,szx*(i-1)+1:szx*i) = count;
+    else
+        res(:,szx*(i-1)+1:end) = count;
+    end
+end
+fig = gcf;
+fig.Position = [200 200 600 600];
+imagesc(x,y,count);
+colormap( [jet();flipud( jet() );0 0 0] );
+

@@ -1,4 +1,4 @@
-function [x, y, count] = mandelbrodt( fname )
+function count = mandelbrodt( fname, resfname )
 %MANDELBRODT Mndelbrodt set calculation for given parameters
 %   To use as a part of rshell-mat - bash script that helps to parallelize
 %   matlab big data processing
@@ -22,6 +22,6 @@ for n = 0:maxIterations
     count = count + inside;
 end
 count = log( count );
-save('result.mat', 'count');
+save(resfname, 'count');
 end
 
