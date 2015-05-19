@@ -87,7 +87,7 @@ printf "Pause time is set to %i\n" $SLEEPTIME
 FRES=${args[$(($nargs-1))]}
 printf "The folder to collect result files: %s\n" $FRES
 printf "\nFinished reading the input arguments\n"
-sleep 3
+sleep 1 
 
 # CONNECT TO REMOTES, SCP FILES, LAUNCH REMOTE BASH
 # ================

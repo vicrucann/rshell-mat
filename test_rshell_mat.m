@@ -1,43 +1,60 @@
 %% Example of matlab scrips that launches bash script to control data parallelization among servers
-% Two examples are considered: calculation of madelbrot set and two
-% matricies summation
+% One examples is considered: calculation of madelbrot set
 
 %% Setting up
 clc; clear; close all;
 login = 'cryo';
-ppath = '/home/cryo/dop'; % distributed operations
-ipaddrs = ['172.23.2.105' ' ' '172.23.5.77'];
-remmat = ''; % definition given below for each example case
-varmat = ''; % definition given below for each example case
-sleeptime = 10;
+ppath = '/home/cryo/dop'; % distributed operations, destination on remote
+ipaddrs = ['172.23.2.105' ' ' '172.23.5.77']; % list of ip addresses
+remmat = 'mandelbrodt'; % name of matlab function that will be launched on remote server
+varmat = 'mnd'; % when splitting data, they will be saved under varmat.mat name on disk
+sleeptime = 5;
+resfold = 'dres'; % name of the result folder
 bashscript = fullfile(pwd,'dhead.sh'); % main bash script that organizes data processing
 
 [ncluster ~] = find(ipaddrs==' '); % to break data into n clusters (as many as given servers)
 ncluster = ncluster+1;
 
-%% Two matrices summation
-% Given two large matrices, find its sum
-remmat = 'sumvar.m';
-
 %% Mandelbrot set
-% Given resolution and iteration number, find corresponding Mandelbrodt set
-
-% name of matlab function to be run on remote server
-remmat = 'mandelbrodt'; % name of matlab function that will be launched on remote server
-varmat = 'mnd'; % when splitting data, they will be saved under varmat.mat name on disk
-resfold = 'dres'; % name of the result folder
+% Given resolution and iteration number, find corresponding Mandelbrot set
 
 % input parameters
 iter = 500;
 isize = 1000;
-xlim = [-0.748766713922161, -0.748766707771757];%[-2, 1]; % to split
-ylim = [ 0.123640844894862,  0.123640851045266];%[-1.5, 1.5]; % to split
+xlim = [-2, 1]; % to split
+ylim = [-1.5, 1.5]; % to split
 x = linspace( xlim(1), xlim(2), isize );
 y = linspace( ylim(1), ylim(2), isize );
 [xGrid,yGrid] = meshgrid( x, y );
 szx = ceil(size(xGrid,2)/ncluster);
 
-% perform the split (assume we break along "X" dimension)
+% perform the full calculation of mandelbrot on local
+fprintf('Calculation on local...');
+tic();
+z0 = xGrid + 1i*yGrid;
+count0 = ones( size(z0) );
+z = z0;
+for n = 0:iter
+    z = z.*z + z0;
+    inside = abs( z )<=2;
+    count0 = count0 + inside;
+end
+count0 = log( count0 );
+tlocal=toc();
+fprintf( 'done\n');
+
+% display local result
+figure;
+fig = gcf;
+fig.Position = [200 200 600 600];
+imagesc( x, y, count0 );
+axis image
+colormap( [jet();flipud( jet() );0 0 0] );
+
+% perform calculation by distributing among the servers
+% split (assume we break along "X" dimension)
+fprintf('\n\nCalculation using remotes \n')
+tic();
 for i=1:ncluster
     if (i ~= ncluster)
         xi=xGrid(:, szx*(i-1)+1:szx*i);
@@ -63,8 +80,15 @@ for i=1:ncluster
         res(:,szx*(i-1)+1:end) = count;
     end
 end
+tcluster = toc();
+
+fprintf('\n\nLocal time vs distributed time: \n    %1.2fsecs vs %1.2fsecs \n', tlocal, tcluster);
+
+% display distributed result
+figure;
 fig = gcf;
 fig.Position = [200 200 600 600];
-imagesc(x,y,count);
+imagesc( x, y, res );
+axis image
 colormap( [jet();flipud( jet() );0 0 0] );
 
