@@ -122,7 +122,7 @@ while [[ $tot -eq 0 ]]; do
 			ssh $LOGIN@${IPADDRS[$i]} "test -e $PPATH/dserver.dn" # check if *.dn file was generated
 			if [ $? -eq 0 ]; then
 				FDONE[$i]=1
-				printf "Server %d obtained results\n" $i
+				printf "Server %d (%s) obtained results\n" $i $IPA
 			else
 				printf " not ready, pause.\n"
 				sleep $SLEEPTIME
