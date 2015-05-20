@@ -117,7 +117,7 @@ tot=0
 while [[ $tot -eq 0 ]]; do
 	i=0
 	for IPA in ${IPADDRS[@]}; do
-		printf "Connecting to a server and checking for files...\n"
+		printf "Connecting to a server %s and checking for files...\n" $IPA
 		if [ ${FDONE[$i]} -eq 0 ]; then
 			ssh $LOGIN@${IPADDRS[$i]} "test -e $PPATH/dserver.dn" # check if *.dn file was generated
 			if [ $? -eq 0 ]; then
