@@ -5,7 +5,7 @@
 clc; clear; close all;
 login = 'cryo';
 ppath = '/home/cryo/dop'; % distributed operations, destination on remote
-ipaddrs = ['172.21.9.92' ' ' '172.23.2.105' ' ' '172.23.5.77']; % list of ip addresses
+ipaddrs = ['130.132.104.236' ' ' '172.21.9.92' ' ' '172.23.2.105' ' ' '172.23.5.77']; % list of ip addresses
 remmat = 'mandelbrot'; % name of matlab function that will be launched on remote server
 varmat = 'mnd'; % when splitting data, they will be saved under varmat.mat name on disk
 sleeptime = 5;
