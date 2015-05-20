@@ -47,7 +47,7 @@ printf "done\n"
 # LAUNCH THE MATLAB FUNCTION
 
 printf "\nRunning matlab script\n"
-matlab -nodisplay -nojvm -nosplash -nodesktop -r "$REMMAT('$IFILE','$RESFILE'),quit()"
+matlab -nodisplay -nojvm -nosplash -nodesktop -r "$REMMAT('$IFILE','$RESFILE');quit();"
 printf "\nMatlab work done\n"
 
 # ================
