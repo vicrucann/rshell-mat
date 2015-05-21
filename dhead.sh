@@ -9,14 +9,14 @@
 # HEADER INSTRUCTIONS
 # ================
 
-printf "The n input arguments for dhead.sh script are: \n"
-printf "[1] LOGIN : login id to the remote servers (assumed it's the same login for every server)\n"
-printf "[2]- PPATH : working directory (will be created if does not exist) on the remote servers; assumed to be the same for each server \n"
-printf "[3..n-4]- IPADDRS : range of ip-addresses of all the servers, assumed they have the same login/psw account \n"
-printf "[n-3]- REMMAT : name of the matlab function (e.g. 'myfunc') that will be copied and launched on remote servers by dremote.sh \n"
-printf "[n-2]- VARMAT : name of the workspace varialbes file (without numering and .mat); these are the variables to copy and load to matlab memory on the remote servers \n"
-printf "[n-1]- SLEEPTIME : integer that indicates number of seconds to pause when waiting for each remote server to complete their computations \n"
-printf "[n] - FRES : name of the local folder where the results will be copied to from the servers \n"
+#printf "The n input arguments for dhead.sh script are: \n"
+#printf "[1] LOGIN : login id to the remote servers (assumed it's the same login for every server)\n"
+#printf "[2]- PPATH : working directory (will be created if does not exist) on the remote servers; assumed to be the same for each server \n"
+#printf "[3..n-4]- IPADDRS : range of ip-addresses of all the servers, assumed they have the same login/psw account \n"
+#printf "[n-3]- REMMAT : name of the matlab function (e.g. 'myfunc') that will be copied and launched on remote servers by dremote.sh \n"
+#printf "[n-2]- VARMAT : name of the workspace varialbes file (without numering and .mat); these are the variables to copy and load to matlab memory on the remote servers \n"
+#printf "[n-1]- SLEEPTIME : integer that indicates number of seconds to pause when waiting for each remote server to complete their computations \n"
+#printf "[n] - FRES : name of the local folder where the results will be copied to from the servers \n"
 
 
 # ARGUMENTS PARSING
@@ -94,9 +94,8 @@ printf "\nFinished reading the input arguments\n"
 eval `ssh-agent`
 ssh-add
 i=0
+printf "\nFile transfer and script launching\n"
 for IPA in ${IPADDRS[@]}; do
-	
-	printf "\nFile transfer using scp\n"
 	ssh $LOGIN@$IPA "mkdir -p $PPATH" # create working directory, if necessary
 	ssh $LOGIN@$IPA "rm -f $PPATH/*" # clear the working directory from any previous data
 	scp $REMSCRIPT $LOGIN@$IPA:$PPATH # copy rserver.sh
@@ -104,7 +103,6 @@ for IPA in ${IPADDRS[@]}; do
 	scp ${IFILES[$i]} $LOGIN@$IPA:$PPATH # copy data file
 	
 	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PPATH; chmod u+x $REMSCRIPT; nohup ./$REMSCRIPT $REMMAT ${IFILES[$i]} > $VARMAT.out 2> $VARMAT.err < /dev/null &'"
-	printf "Launched the shell on remote\n"
 	i=$((i+1))
 done
 
@@ -118,8 +116,8 @@ tot=0
 while [[ $tot -eq 0 ]]; do
 	i=0
 	for IPA in ${IPADDRS[@]}; do
-		printf "Connecting to a server %s and checking for files...\n" $IPA
 		if [ ${FDONE[$i]} -eq 0 ]; then
+			printf "Connecting to a server %s and checking for files...\n" $IPA
 			ssh $LOGIN@${IPADDRS[$i]} "test -e $PPATH/dserver.dn" # check if *.dn file was generated
 			if [ $? -eq 0 ]; then
 				FDONE[$i]=1
@@ -155,12 +153,12 @@ printf "\nCopying the result files\n"
 i=0
 for IPA in ${IPADDRS[@]}; do
 	printf "\nCreating folder for results from server %s\n" $IPA
-	mkdir -p $IPA
+	#mkdir -p $IPA
 	mkdir -p $FRES
 	printf "File transfer using scp\n"
 	scp $LOGIN@$IPA:$PPATH/result_${IFILES[$i]} $FRES  # $IPA
-	scp $LOGIN@$IPA:$PPATH/$VARMAT.out $IPA
-	scp $LOGIN@$IPA:$PPATH/$VARMAT.err $IPA
+	#scp $LOGIN@$IPA:$PPATH/$VARMAT.out $IPA
+	#scp $LOGIN@$IPA:$PPATH/$VARMAT.err $IPA
 	i=$(($i+1))
 done
 
