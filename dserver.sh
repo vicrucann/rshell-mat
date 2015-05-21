@@ -36,14 +36,6 @@ printf "Input file name: %s\n" $IFILE
 printf "Result save name: %s\n\n" $RESFILE
 
 # ================
-# REMOVE PREVIOUSLY GENERATED FILES
-
-printf "Cleaning up the old data..."
-rm -f dserver.dn
-rm -f $RESFILE
-printf "done\n"
-
-# ================
 # LAUNCH THE MATLAB FUNCTION
 
 printf "\nRunning matlab script\n"

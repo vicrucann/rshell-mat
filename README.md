@@ -53,3 +53,5 @@ The distribution scripts assume all the remote machines have the same login id a
 
 When using a Windows maching as a SSHD server, it is necessary to install and configure cygwin: [Cygwin - SSHD Configuration](techtorials.me/cygwin/sshd-configuration/).  
 
+The distributed scrip clears all the data in the provided work folder, so make sure it is either new folder or you do not have any valuable data in the work directories on each of the remotes.  
+

@@ -95,8 +95,10 @@ eval `ssh-agent`
 ssh-add
 i=0
 for IPA in ${IPADDRS[@]}; do
+	
 	printf "\nFile transfer using scp\n"
-	ssh $LOGIN@$IPA "mkdir -p $PPATH"
+	ssh $LOGIN@$IPA "mkdir -p $PPATH" # create working directory, if necessary
+	ssh $LOGIN@$IPA "rm -f $PPATH/*" # clear the working directory from any previous data
 	scp $REMSCRIPT $LOGIN@$IPA:$PPATH # copy rserver.sh
 	scp $REMMAT.m $LOGIN@$IPA:$PPATH # copy remote matlab function
 	scp ${IFILES[$i]} $LOGIN@$IPA:$PPATH # copy data file
