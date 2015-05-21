@@ -11,6 +11,7 @@ varmat = 'mnd'; % when splitting data, they will be saved under varmat.mat name 
 sleeptime = 5;
 resfold = 'dres'; % name of the result folder
 bashscript = fullfile(pwd,'dhead.sh'); % main bash script that organizes data processing
+printout = 0; % print the bash output (1) or not (0)
 
 [ncluster ~] = find(ipaddrs==' '); % to break data into n clusters (as many as given servers)
 ncluster = size(ncluster,2)+1;
@@ -46,7 +47,12 @@ for i=1:ncluster
     save([varmat int2str(i) '.mat'], 'xi', 'yi', 'iter');
 end
 system(['chmod u+x ' bashscript])
-cmdStr = [bashscript ' ' login ' ' ppath ' ' ipaddrs ' ' remmat ' ' varmat ' ' int2str(sleeptime) ' ' resfold];
+if printout
+    cmdStr = [bashscript ' ' login ' ' ppath ' ' ipaddrs ' ' remmat ' ' varmat ' ' int2str(sleeptime) ' ' resfold];
+else
+    cmdStr = [bashscript ' ' login ' ' ppath ' ' ipaddrs ' '...
+        remmat ' ' varmat ' ' int2str(sleeptime) ' ' resfold '>' remmat '.log 2>&1'];
+end
 % perform the command
 system(cmdStr)
 
