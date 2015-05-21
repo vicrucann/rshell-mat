@@ -85,6 +85,7 @@ SLEEPTIME=${args[$(($nargs-2))]}
 printf "Pause time is set to %i\n" $SLEEPTIME
 
 FRES=${args[$(($nargs-1))]}
+mkdir -p $FRES
 printf "The folder to collect result files: %s\n" $FRES
 printf "\nFinished reading the input arguments\n"
 
@@ -122,6 +123,8 @@ while [[ $tot -eq 0 ]]; do
 			if [ $? -eq 0 ]; then
 				FDONE[$i]=1
 				printf "Server %d (%s) obtained results\n" $i $IPA
+				printf "\nCopying the result files\n"
+				nohup scp $LOGIN@$IPA:$PPATH/result_${IFILES[$i]} $FRES & 
 			else
 				printf " not ready, pause.\n"
 				sleep $SLEEPTIME
@@ -144,22 +147,6 @@ while [[ $tot -eq 0 ]]; do
 		fi
 		i=$(($i+1))
 	done
-done
-
-# SCP FROM REMOTES TO LOCAL THE RESULT DATA
-# ================
-
-printf "\nCopying the result files\n"
-i=0
-for IPA in ${IPADDRS[@]}; do
-	printf "\nCreating folder for results from server %s\n" $IPA
-	#mkdir -p $IPA
-	mkdir -p $FRES
-	printf "File transfer using scp\n"
-	scp $LOGIN@$IPA:$PPATH/result_${IFILES[$i]} $FRES  # $IPA
-	#scp $LOGIN@$IPA:$PPATH/$VARMAT.out $IPA
-	#scp $LOGIN@$IPA:$PPATH/$VARMAT.err $IPA
-	i=$(($i+1))
 done
 
 kill $SSH_AGENT_PID
