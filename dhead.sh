@@ -99,9 +99,9 @@ printf "\nFile transfer and script launching\n"
 for IPA in ${IPADDRS[@]}; do
 	ssh $LOGIN@$IPA "mkdir -p $PPATH" # create working directory, if necessary
 	ssh $LOGIN@$IPA "rm -f $PPATH/*" # clear the working directory from any previous data
-	scp $REMSCRIPT $LOGIN@$IPA:$PPATH # copy rserver.sh
-	scp $REMMAT.m $LOGIN@$IPA:$PPATH # copy remote matlab function
-	scp ${IFILES[$i]} $LOGIN@$IPA:$PPATH # copy data file
+	scp $REMSCRIPT $LOGIN@$IPA:$PPATH 
+	scp $REMMAT.m $LOGIN@$IPA:$PPATH 
+	scp ${IFILES[$i]} $LOGIN@$IPA:$PPATH 
 	
 	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PPATH; chmod u+x $REMSCRIPT; nohup ./$REMSCRIPT $REMMAT ${IFILES[$i]} > $VARMAT.out 2> $VARMAT.err < /dev/null &'"
 	i=$((i+1))
