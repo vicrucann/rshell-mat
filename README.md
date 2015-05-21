@@ -22,12 +22,18 @@ cmdstr = ['dhead.sh' ' ' login ' ' path ' ' ipaddrs ' '...
 	 remmat ' ' varmat ' ' int2str(sleeptime) ' ' resfold];  
 system(cmdstr); % will perform the command above
 ```  
+or, in case if you want to suppress any script output and forward it to a *.log* file (which also improves the computation time):  
+```
+cmdstr_noOutput = [bashscript ' ' login ' ' ppath ' ' ipaddrs ' '...
+        remmat ' ' varmat ' ' int2str(sleeptime) ' ' resfold '>' remmat '.log 2>&1'];
+system(cmdstr_noOutput)
+```
 Where  
 `login` is a login id, in a string format, e.g.: `login = 'localu';`.   
 
 `path` is a workspace path on remote servers (if the folder does not exist, it will be created), e.g.: `path = '/home/remoteu/tmp'`.   
 
-`ipaddrs` is a list of IP addresses, in a string format; it has a form of `['ipsddrs1' ' ' 'ipsddrs2' ' ' ...]` - each IP address must be separated by **one** space character from its neighbors.  
+`ipaddrs` is a list of IP addresses, in a string format; it has a form of `['ipaddrs1' ' ' 'ipaddrs2' ' ' ...]` - each IP address must be separated by **one** space character from its neighbors.  
  
 `remmat` is a matlab function name that will be run on remotes, in a string format, withought *.m* resolution; for example, if you intend to run function *fft-custom.m*, you have to set `remmat='fft-custom';`.   
 
