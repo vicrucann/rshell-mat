@@ -3,5 +3,6 @@
 * Help file on how to setup the distributer, including ssh-keygen procedures + help links.  
 * Boolean variable that makes an option to suppres the bash script output texts.  
 * Check if given ip address is reachable; if not - either exit with error or continue without this server.  
-* Unite wait+scp so that when matlab function is done those particular results would start scp-ed while at the same time it would keep on waiting for other servers.   
+* Unite wait+scp so that when matlab function is done those particular results would start scp-ed while at the same time it would keep on waiting for other servers.  
+* Clean from all previous data BEFORE scp-ing and ssh-ing.   
 
