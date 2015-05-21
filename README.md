@@ -1,14 +1,18 @@
 ## Short description
 
-*rshell-mat* is bash script based project that helps to ease heavy data processing in matlab. Its main idea is to send the split big data to several remote servers and run the heavy computations simultaneously. When the processing is done, the split result files are copied back to the local machine and can be used further in matlab. The processing is done by two main bash scripts:  
+*rshell-mat* is bash script based project that helps to ease heavy data processing in matlab. Its main idea is to send the split big data to several remote servers and run the heavy computations simultaneously using those remotes. When the processing is done, the split result files are copied back to the local machine and can be used further in matlab. The processing is done by two main bash scripts:  
 * *dhead.sh* - a local head script that performs the distribution among the remote servers and also copying all the files forward and back  
 * *dserver.sh* - a remote server script that launches matlab function on the remote server  
+
+## Platforms  
+
+The scripts are able to distribute the data processing among Linux servers, Windows (Cygwin SSHD) servers and the mixture of both.  
 
 ## Quick start
 
 A usage example is provided - calculation of the Mandelbrot set. To run the example, open and run **test_rshell_mat.m**:  
 * Insert your own settings for the remote servers (such as IP addresses, login, path, etc).  
-* **IMPORTANT**: it is absolutely necessary to set up the login process through the ssh key (no need if you do not use password protection), otherwise the password prompts will not allow for the programm to continue.  
+* **IMPORTANT**: it is absolutely necessary to set up the login process through the SSH public-key (no need if you do not use password protection), otherwise the password prompts will not allow for the programm to continue.  
 
 ## List of parameters  
 
@@ -37,7 +41,9 @@ Where
 
 Besides the forementioned folders and files, the program will also produce a range of folders in the current directory under each server.s name where the *.err* and *.out* files will be kept.
 
-**It is the responsibility of user to split and merge the data as a pre- and after- data processing**. The main task of the distribution bash is to tranfer the split data to the servers, run the necessary computations and bring all the result data back to the local machine for further usage withing matlab.  
+**It is the responsibility of user to split and merge the data as a pre- and after- data processing**. The main task of the distribution bash is to tranfer the split data to the servers, run the necessary computations and bring all the results data back to the local machine for further usage withing matlab.   
 
+The distribution scripts assume all the remote machines have the same login id and are accessed using public key authorization (pass phrase), a tutorial on [How do I set up SSH public-key authoentication to connect to a remote systen](https://kb.iu.edu/d/aews).  
 
+When using a Windows maching as a SSHD server, it is necessary to install and configure cygwin: [Cygwin - SSHD Configuration](techtorials.me/cygwin/sshd-configuration/).  
 

@@ -23,7 +23,7 @@ iter = 2000;
 isize = 4000;
 xlim = [-2, 1]; % to split
 ylim = [-1.5, 1.5]; % to split
-figpos = [100 100 2000 2000];
+figpos = [100 100 1000 1000];
 
 % pre-calcualtion
 x = linspace( xlim(1), xlim(2), isize );
