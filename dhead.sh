@@ -5,6 +5,7 @@
 #   Wait for servers to complete.
 #   Collect and merge the results.
 #   dhead.sh - "distributed head server shell".
+#   2015 Victoria Rudakova, vicrucann@gmail.com
 
 # HEADER INSTRUCTIONS
 # ================

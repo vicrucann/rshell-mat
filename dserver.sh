@@ -4,6 +4,7 @@
 #	Clears all the previous temporal data
 #	Launches predefined matlab script in silent mode
 #	Generates output data
+#	2015 Victoria Rudakova, vicrucann@gmail.com
 
 # ================
 # ARGUMENT PARSING

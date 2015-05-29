@@ -2,7 +2,7 @@ function count = mandelbrot( fname, resfname )
 %MANDELBROT Mndelbrodt set calculation for given parameters
 %   To use as a part of rshell-mat - bash script that helps to parallelize
 %   matlab big data processing
-%   2015 vicrucann@gmail.com
+%   2015 Victoria Rudakova, vicrucann@gmail.com
 
 fprintf('The data file provided: %s\n', fname);
 

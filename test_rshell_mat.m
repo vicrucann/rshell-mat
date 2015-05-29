@@ -1,5 +1,6 @@
 %% Example of matlab scrips that launches bash script to control data parallelization among servers
 % One examples is considered: calculation of madelbrot set
+% 2015 Victoria Rudakova, vicrucann@gmail.com
 
 %% Setting up
 clc; clear; close all;
