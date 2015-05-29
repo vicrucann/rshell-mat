@@ -19,13 +19,13 @@ A usage example is provided - calculation of the Mandelbrot set. To run the exam
 For general usage, the bash script can be run from matlab by using the next two lines:  
 ```  
 cmdstr = ['dhead.sh' ' ' login ' ' path ' ' ipaddrs ' '...
-	 remmat ' ' varmat ' ' int2str(sleeptime) ' ' resfold];  
+	 pathsrc ' ' remmat ' ' pathout ' ' varmat ' ' int2str(sleeptime) ' ' resfold];  
 system(cmdstr); % will perform the command above
 ```  
 or, in case if you want to suppress any script output and forward it to a *.log* file (which also improves the computation time):  
 ```
 cmdstr_noOutput = [bashscript ' ' login ' ' ppath ' ' ipaddrs ' '...
-        remmat ' ' varmat ' ' int2str(sleeptime) ' ' resfold '>' remmat '.log 2>&1'];
+        pathsrc ' ' remmat ' ' pathout ' ' varmat ' ' int2str(sleeptime) ' ' resfold '>' remmat '.log 2>&1'];
 system(cmdstr_noOutput)
 ```
 Where  
@@ -34,8 +34,12 @@ Where
 `path` is a workspace path on remote servers (if the folder does not exist, it will be created), e.g.: `path = '/home/remoteu/tmp'`.   
 
 `ipaddrs` is a list of IP addresses, in a string format; it has a form of `['ipaddrs1' ' ' 'ipaddrs2' ' ' ...]` - each IP address must be separated by **one** space character from its neighbors.  
+
+`pathsrc` is a folder path from where `remmat` will be read from   
  
 `remmat` is a matlab function name that will be run on remotes, in a string format, withought *.m* resolution; for example, if you intend to run function *fft-custom.m*, you have to set `remmat='fft-custom';`.   
+
+`pathout` is a folder path where all the `varmat` data is stored and loaded from  
 
 `varmat` is a temporal file name where the work variables will be saved to, in a string format.   
 
