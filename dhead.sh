@@ -13,11 +13,12 @@
 #printf "The n input arguments for dhead.sh script are: \n"
 #printf "[0] LOGIN : login id to the remote servers (assumed it's the same login for every server)\n"
 #printf "[1]- PPATH : working directory (will be created if does not exist) on the remote servers; assumed to be the same for each server \n"
-#printf "[2..n-7]- IPADDRS : range of ip-addresses of all the servers, assumed they have the same login/psw account \n"
-#printf "[n-6]- PATHMAT : path name where REMMAT function is located \n"
-#printf "[n-5]- REMMAT : name of the matlab function (e.g. 'myfunc') that will be copied and launched on remote servers by dremote.sh \n"
-#printf "[n-4]- PATHOUT : path name where VARMAT data will be saved to and loaded from \n"
-#printf "[n-3]- VARMAT : name of the workspace varialbes file (without numering and .mat); these are the variables to copy and load to matlab memory on the remote servers \n"
+#printf "[2..n-8]- IPADDRS : range of ip-addresses of all the servers, assumed they have the same login/psw account \n"
+#printf "[n-7]- PATHMAT : path name where REMMAT function is located \n"
+#printf "[n-6]- REMMAT : name of the matlab function (e.g. 'myfunc') that will be copied and launched on remote servers by dremote.sh \n"
+#printf "[n-5]- PATHOUT : path name where VARMAT data will be saved to and loaded from \n"
+#printf "[n-4]- VARMAT : name of the workspace varialbes file (without numering and .mat); these are the variables to copy and load to matlab memory on the remote servers \n"
+#printf "[n-3]- PATHCURR : path name where .sh scripts are located, basically it is a full path to the current folder \n"
 #printf "[n-2]- SLEEPTIME : integer that indicates number of seconds to pause when waiting for each remote server to complete their computations \n"
 #printf "[n-1] - FRES : name of the local folder where the results will be copied to from the servers \n"
 
@@ -28,11 +29,11 @@
 args=("$@")
 printf "\nNumber of arguments passed: %d\n" $#
 nargs=$#
-if [ $nargs -lt 9 ]; then
-	echo "ERROR: Number of passed arguments is smaller than required minimum (8)"
+if [ $nargs -lt 10 ]; then
+	echo "ERROR: Number of passed arguments is smaller than required minimum (10)"
 	exit 1
 fi
-nservs=$((nargs-8))
+nservs=$((nargs-9))
 printf "Number of servers: %d\n" $nservs
 
 LOGIN=${args[0]}
@@ -51,9 +52,9 @@ done
 printf "\nIP addresses extracted:\n"
 echo ${IPADDRS[@]}
 
-PATHMAT=${args[$nargs-6]}
+PATHMAT=${args[$nargs-7]}
 
-REMMAT=${args[$nargs-5]} # check file existance
+REMMAT=${args[$nargs-6]} # check file existance
 test -e $PATHMAT$REMMAT.m
 if [ $? -ne 0 ]; then
 	printf "ERROR: no such file: %s\n" $PATHMAT$REMMAT.m
@@ -61,17 +62,19 @@ if [ $? -ne 0 ]; then
 fi
 printf "Matlab script file for remote: %s\n" $PATHMAT$REMMAT.m
 
+PATHCURR=${args[$(($nargs-3))]}
+
 REMSCRIPT="dserver.sh" # check file existance
-test -e $PATHMAT$REMSCRIPT
+test -e $PATHCURR$REMSCRIPT
 if [ $? -ne 0 ]; then
-	printf "ERROR: no such file: %s\n" $PATHMAT$REMSCRIPT
+	printf "ERROR: no such file: %s\n" $PATHCURR$REMSCRIPT
 	exit 1
 fi
-printf "Remote bash script: %s\n" $PATHMAT$REMSCRIPT
+printf "Remote bash script: %s\n" $PATHCURR$REMSCRIPT
 
-PATHOUT=${args[$(($nargs-4))]}
+PATHOUT=${args[$(($nargs-5))]}
 
-VARMAT=${args[$(($nargs-3))]} # check file existance
+VARMAT=${args[$(($nargs-4))]} # check file existance
 j=1
 i=0
 for IPA in ${IPADDRS[@]}; do
@@ -106,7 +109,7 @@ printf "\nFile transfer and script launching\n"
 for IPA in ${IPADDRS[@]}; do
 	ssh $LOGIN@$IPA "mkdir -p $PPATH" # create working directory, if necessary
 	ssh $LOGIN@$IPA "rm -f $PPATH/*" # clear the working directory from any previous data
-	scp $PATHMAT$REMSCRIPT $LOGIN@$IPA:$PPATH 
+	scp $PATHCURR$REMSCRIPT $LOGIN@$IPA:$PPATH 
 	scp $PATHMAT$REMMAT.m $LOGIN@$IPA:$PPATH 
 	scp $PATHOUT${IFILES[$i]} $LOGIN@$IPA:$PPATH 
 	
@@ -130,8 +133,8 @@ while [[ $tot -eq 0 ]]; do
 			if [ $? -eq 0 ]; then
 				FDONE[$i]=1
 				printf "Server %d (%s) obtained results\n" $i $IPA
-				printf "\nCopying the result files\n"
-				nohup scp $LOGIN@$IPA:$PPATH/result_${IFILES[$i]} $FRES & 
+				#printf "\nCopying the result files\n"
+				#nohup scp $LOGIN@$IPA:$PPATH/result_${IFILES[$i]} $FRES & 
 			else
 				printf " not ready, pause.\n"
 				sleep $SLEEPTIME
@@ -154,6 +157,22 @@ while [[ $tot -eq 0 ]]; do
 		fi
 		i=$(($i+1))
 	done
+done
+
+# SCP FROM REMOTES TO LOCAL THE RESULT DATA
+# ================
+
+printf "\nCopying the result files\n"
+i=0
+for IPA in ${IPADDRS[@]}; do
+	printf "\nCreating folder for results from server %s\n" $IPA
+	#mkdir -p $IPA
+	#mkdir -p $FRES
+	printf "File transfer using scp\n"
+	scp $LOGIN@$IPA:$PPATH/result_${IFILES[$i]} $FRES  # $IPA
+	#scp $LOGIN@$IPA:$PPATH/$VARMAT.out $IPA
+	#scp $LOGIN@$IPA:$PPATH/$VARMAT.err $IPA
+	i=$(($i+1))
 done
 
 kill $SSH_AGENT_PID
