@@ -19,13 +19,14 @@ A usage example is provided - calculation of the Mandelbrot set. To run the exam
 For general usage, the bash script can be run from matlab by using the next two lines:  
 ```  
 cmdstr = ['dhead.sh' ' ' login ' ' path ' ' ipaddrs ' '...
-	 pathsrc ' ' remmat ' ' pathout ' ' varmat ' ' int2str(sleeptime) ' ' resfold];  
+	 pathsrc ' ' remmat ' ' pathout ' ' varmat ' ' pathcurr ' ' int2str(sleeptime) ' ' resfold];  
 system(cmdstr); % will perform the command above
 ```  
 or, in case if you want to suppress any script output and forward it to a *.log* file (which also improves the computation time):  
 ```
 cmdstr_noOutput = [bashscript ' ' login ' ' ppath ' ' ipaddrs ' '...
-        pathsrc ' ' remmat ' ' pathout ' ' varmat ' ' int2str(sleeptime) ' ' resfold '>' remmat '.log 2>&1'];
+        pathsrc ' ' remmat ' ' pathout ' ' varmat ' ' pathcurr ' ' int2str(sleeptime) ' ' resfold ...
+	'>' remmat '.log 2>&1'];
 system(cmdstr_noOutput)
 ```
 Where  
@@ -43,13 +44,13 @@ Where
 
 `varmat` is a temporal file name where the work variables will be saved to, in a string format.   
 
+`pathcurr` is a folder path where the .sh scripts are located, basically it is a full path to the current folder.  
+
 `sleeptime` is a pause interval in seconds, integer; you may want to increase it for heavy data computations.    
 
 `resfold` is a name of a folder on local machine where the essential result files will be kept, in a string format.  
 
 ## Notes  
-
-Besides the forementioned folders and files, the program will also produce a range of folders in the current directory under each server.s name where the *.err* and *.out* files will be kept.
 
 **It is the responsibility of user to split and merge the data as a pre- and after- data processing**. The main task of the distribution bash is to tranfer the split data to the servers, run the necessary computations and bring all the results data back to the local machine for further usage withing matlab.   
 
@@ -59,6 +60,8 @@ When using a Windows maching as a SSHD server, it is necessary to install and co
 
 The distributed scrip clears all the data in the provided work folder, so make sure it is either new folder or you do not have any valuable data in the work directories on each of the remotes.  
 
+The bash distributor package was created as a part of [cryo3d](https://github.com/vicrucann/cryo3d) matlab-based software which reconstructs the 3D model of a particle based on its cryogenic images. *rshell-mat* was made to deal with the heaviest computational part of the pipeline - calculations of SSDs to find the best projection direction and transfomation parameters.  
+
 ###### For questions and inqueries 
 
-2015 Victoria Rudakova, vicrucann(at)gmail(dot)com
+Victoria Rudakova, vicrucann(at)gmail(dot)com
