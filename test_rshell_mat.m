@@ -6,13 +6,27 @@
 clc; clear; close all;
 login = 'cryo';
 ppath = '/home/cryo/dop'; % distributed operations, destination on remote
+cpath = pwd;
+slash = cpath(end);
+if (~isequal(slash, '\') && ~isequal(slash, '/'))
+    archstr = computer('arch');
+    if (isequal(archstr(1:3), 'win')) % Windows
+        cpath = [cpath '\'];
+    else % Linux
+        cpath = [cpath '/'];
+    end
+end
+
 ipaddrs = ['130.132.104.236' ' ' '172.21.9.92' ' ' '172.23.2.105' ' ' '172.23.5.77']; % list of ip addresses
+pathsrc = cpath;
 remmat = 'mandelbrot'; % name of matlab function that will be launched on remote server
+pathout = cpath;
 varmat = 'mnd'; % when splitting data, they will be saved under varmat.mat name on disk
+pathcurr = cpath;
 sleeptime = 5;
 resfold = 'dres'; % name of the result folder
 bashscript = fullfile(pwd,'dhead.sh'); % main bash script that organizes data processing
-printout = 0; % print the bash output (1) or not (0)
+printout = 1; % print the bash output (1) or not (0)
 
 [ncluster ~] = find(ipaddrs==' '); % to break data into n clusters (as many as given servers)
 ncluster = size(ncluster,2)+1;
@@ -49,10 +63,13 @@ for i=1:ncluster
 end
 system(['chmod u+x ' bashscript])
 if printout
-    cmdStr = [bashscript ' ' login ' ' ppath ' ' ipaddrs ' ' remmat ' ' varmat ' ' int2str(sleeptime) ' ' resfold];
+    cmdStr = [bashscript ' ' login ' ' ppath ' ' ipaddrs ' '...
+        pathsrc ' ' remmat ' ' pathout ' ' varmat ' ' pathcurr ' ' ...
+        int2str(sleeptime) ' ' resfold];
 else
     cmdStr = [bashscript ' ' login ' ' ppath ' ' ipaddrs ' '...
-        remmat ' ' varmat ' ' int2str(sleeptime) ' ' resfold '>' remmat '.log 2>&1'];
+        pathsrc ' ' remmat ' ' pathout ' ' varmat ' ' pathcurr ' ' ...
+        int2str(sleeptime) ' ' resfold '>' remmat '.log 2>&1'];
 end
 % perform the command
 system(cmdStr)
