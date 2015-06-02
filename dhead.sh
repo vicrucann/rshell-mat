@@ -111,7 +111,7 @@ for IPA in ${IPADDRS[@]}; do
 	ssh $LOGIN@$IPA "rm -f $PPATH/*" # clear the working directory from any previous data
 	scp $PATHCURR$REMSCRIPT $LOGIN@$IPA:$PPATH 
 	scp $PATHMAT$REMMAT.m $LOGIN@$IPA:$PPATH 
-	scp $PATHOUT${IFILES[$i]} $LOGIN@$IPA:$PPATH 
+	scp -c arcfour $PATHOUT${IFILES[$i]} $LOGIN@$IPA:$PPATH 
 	
 	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PPATH; chmod u+x $REMSCRIPT; nohup ./$REMSCRIPT $REMMAT ${IFILES[$i]} > $VARMAT.out 2> $VARMAT.err < /dev/null &'"
 	i=$((i+1))
@@ -169,7 +169,7 @@ for IPA in ${IPADDRS[@]}; do
 	#mkdir -p $IPA
 	#mkdir -p $FRES
 	printf "File transfer using scp\n"
-	scp $LOGIN@$IPA:$PPATH/result_${IFILES[$i]} $FRES  # $IPA
+	scp -c arcfour $LOGIN@$IPA:$PPATH/result_${IFILES[$i]} $FRES  # $IPA
 	#scp $LOGIN@$IPA:$PPATH/$VARMAT.out $IPA
 	#scp $LOGIN@$IPA:$PPATH/$VARMAT.err $IPA
 	i=$(($i+1))
