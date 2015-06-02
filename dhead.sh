@@ -165,7 +165,7 @@ done
 printf "\nCopying the result files\n"
 i=0
 for IPA in ${IPADDRS[@]}; do
-	printf "\nCreating folder for results from server %s\n" $IPA
+	#printf "\nCreating folder for results from server %s\n" $IPA
 	#mkdir -p $IPA
 	#mkdir -p $FRES
 	printf "File transfer using scp\n"
