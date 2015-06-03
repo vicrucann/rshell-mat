@@ -16,7 +16,8 @@ A usage example is provided - calculation of the Mandelbrot set. To run the exam
 ```
 eval \`ssh-agent\`
 ssh-add
-``` and provide the pass-phrase.  
+```  
+and provide the pass-phrase.  
 * Now launch the Matlab from the **same terminal command line, not in the background**.  
 * Open the example script *test_rshell_mat.m*.   
 * Inside the example Matlab script, insert your own settings for the remote servers (such as IP addresses, login, paths, etc). Your Matlab script is now ready to be run.  
