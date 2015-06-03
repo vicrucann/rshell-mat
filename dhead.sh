@@ -102,8 +102,8 @@ printf "\nFinished reading the input arguments\n"
 # CONNECT TO REMOTES, SCP FILES, LAUNCH REMOTE BASH
 # ================
 
-eval `ssh-agent`
-ssh-add
+#eval `ssh-agent`
+#ssh-add
 i=0
 printf "\nFile transfer and script launching\n"
 for IPA in ${IPADDRS[@]}; do
@@ -175,6 +175,6 @@ for IPA in ${IPADDRS[@]}; do
 	i=$(($i+1))
 done
 
-kill $SSH_AGENT_PID
+#kill $SSH_AGENT_PID
 
 printf "\nBash script terminated\n"

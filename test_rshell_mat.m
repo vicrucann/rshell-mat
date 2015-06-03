@@ -3,7 +3,7 @@
 % 2015 Victoria Rudakova, vicrucann@gmail.com
 
 %% Setting up
-clc; clear; close all;
+%clc; clear; close all;
 login = 'cryo';
 ppath = '/home/cryo/dop'; % distributed operations, destination on remote
 cpath = pwd;

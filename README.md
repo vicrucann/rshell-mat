@@ -10,9 +10,20 @@ The scripts are able to distribute the data processing among Linux servers, Wind
 
 ## Quick start
 
-A usage example is provided - calculation of the Mandelbrot set. To run the example, open and run **test_rshell_mat.m**:  
-* Insert your own settings for the remote servers (such as IP addresses, login, path, etc).  
-* **IMPORTANT**: it is absolutely necessary to set up the login process through the SSH public-key (no need if you do not use password protection), otherwise the password prompts will not allow for the programm to continue (see [Notes](https://github.com/vicrucann/rshell-mat#notes) for tutorial examples).  
+A usage example is provided - calculation of the Mandelbrot set. To run the example, you can use **test_rshell_mat.m** with the following steps:   
+* **IMPORTANT**: it is absolutely necessary to set up the login process through the SSH public-key, otherwise the password prompts will not allow for the programm to continue (see [Notes](https://github.com/vicrucann/rshell-mat#notes) for tutorial examples).  
+* Before launching the Matlab, set up the SSH connection to the remotes by using *ssh-agent*. For example, run the folloing commands in your command line:  
+```
+eval \`ssh-agent\`
+ssh-add
+``` and provide the pass-phrase.  
+* Now launch the Matlab from the **same terminal command line, not in the background**.  
+* Open the example script *test_rshell_mat.m*.   
+* Inside the example Matlab script, insert your own settings for the remote servers (such as IP addresses, login, paths, etc). Your Matlab script is now ready to be run.  
+* When all the calculation are finished and you no longer wish to use the SSH connection and Matlab, exit Matlab, and do not forget to remove the added key (run in command line):  
+```
+kill $SSH_AGENT_PID
+```  
 
 ## List of parameters  
 
