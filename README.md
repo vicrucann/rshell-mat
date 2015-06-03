@@ -18,7 +18,10 @@ eval \`ssh-agent\`
 ssh-add
 ```  
 and provide the pass-phrase.  
-* Now launch the Matlab from the **same terminal command line, not in the background**.  
+* Now launch the Matlab from the **same terminal command line, not in the background**:  
+```  
+matlab
+```   
 * Open the example script *test_rshell_mat.m*.   
 * Inside the example Matlab script, insert your own settings for the remote servers (such as IP addresses, login, paths, etc). Your Matlab script is now ready to be run.  
 * When all the calculation are finished and you no longer wish to use the SSH connection and Matlab, exit Matlab, and do not forget to remove the added key (run in command line):  
