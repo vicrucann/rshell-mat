@@ -14,7 +14,7 @@ A usage example is provided - calculation of the Mandelbrot set. To run the exam
 * **IMPORTANT**: it is absolutely necessary to set up the login process through the SSH public-key, otherwise the password prompts will not allow for the programm to continue (see [Notes](https://github.com/vicrucann/rshell-mat#notes) for tutorial examples).  
 * Before launching the Matlab, set up the SSH connection to the remotes by using *ssh-agent*. For example, run the folloing commands in your command line:  
 ```
-eval \`ssh-agent\`
+eval `ssh-agent`
 ssh-add
 ```  
 and provide the pass-phrase.  
