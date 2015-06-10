@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Perform heavy data processing by splitting the task to different servers:
-#   Transfer the data and "kernel" function to the servers. 
+#   Transfer the data and "kernel" function to the servers.
 #   Wait for servers to complete.
 #   Collect and merge the results.
 #   dhead.sh - "distributed head server shell".
@@ -18,7 +18,7 @@
 #printf "[n-6]- REMMAT : name of the matlab function (e.g. 'myfunc') that will be copied and launched on remote servers by dremote.sh \n"
 #printf "[n-5]- PATHOUT : path name where VARMAT data will be saved to and loaded from \n"
 #printf "[n-4]- VARMAT : name of the workspace varialbes file (without numering and .mat); these are the variables to copy and load to matlab memory on the remote servers \n"
-#printf "[n-3]- PATHCURR : path name where .sh scripts are located, basically it is a full path to the current folder \n"
+#printf "[n-3]- PATHCURR : path name where .sh scripts are located, literally, it is a full path to the current folder \n"
 #printf "[n-2]- SLEEPTIME : integer that indicates number of seconds to pause when waiting for each remote server to complete their computations \n"
 #printf "[n-1] - FRES : name of the local folder where the results will be copied to from the servers \n"
 
@@ -109,10 +109,10 @@ printf "\nFile transfer and script launching\n"
 for IPA in ${IPADDRS[@]}; do
 	ssh $LOGIN@$IPA "mkdir -p $PPATH" # create working directory, if necessary
 	ssh $LOGIN@$IPA "rm -f $PPATH/*" # clear the working directory from any previous data
-	scp $PATHCURR$REMSCRIPT $LOGIN@$IPA:$PPATH 
-	scp $PATHMAT$REMMAT.m $LOGIN@$IPA:$PPATH 
-	scp -c arcfour $PATHOUT${IFILES[$i]} $LOGIN@$IPA:$PPATH 
-	
+	scp $PATHCURR$REMSCRIPT $LOGIN@$IPA:$PPATH
+	scp $PATHMAT$REMMAT.m $LOGIN@$IPA:$PPATH
+	scp -c arcfour $PATHOUT${IFILES[$i]} $LOGIN@$IPA:$PPATH
+
 	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PPATH; chmod u+x $REMSCRIPT; nohup ./$REMSCRIPT $REMMAT ${IFILES[$i]} > $VARMAT.out 2> $VARMAT.err < /dev/null &'"
 	i=$((i+1))
 done
@@ -134,7 +134,7 @@ while [[ $tot -eq 0 ]]; do
 				FDONE[$i]=1
 				printf "Server %d (%s) obtained results\n" $i $IPA
 				#printf "\nCopying the result files\n"
-				#nohup scp $LOGIN@$IPA:$PPATH/result_${IFILES[$i]} $FRES & 
+				#nohup scp $LOGIN@$IPA:$PPATH/result_${IFILES[$i]} $FRES &
 			else
 				printf " not ready, pause.\n"
 				sleep $SLEEPTIME
