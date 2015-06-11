@@ -17,12 +17,11 @@ classdef MandelbrotDistributor < ADistributor
         end
         
         % redefined split method
-        function split(~, input)
+        function out = split(obj, input)
             ncluster = input.ncluster;
             xGrid = input.xGrid;
             yGrid = input.yGrid;
             szx = input.szx;
-            varmat = input.varmat;
             iter = input.iter;
             
             for i=1:ncluster
@@ -33,19 +32,24 @@ classdef MandelbrotDistributor < ADistributor
                     xi=xGrid(:, szx*(i-1)+1:end);
                     yi=yGrid(:, szx*(i-1)+1:end);
                 end
-                save([varmat int2str(i) '.mat'], 'xi', 'yi', 'iter'); % [xi, yi, iter] are saved
+                save([obj.parameters.varmat int2str(i) '.mat'], 'xi', 'yi', 'iter'); % [xi, yi, iter] are saved
             end
+            out = 1;
         end
         
         % redefined merge method
-        function res = merge(obj, isize, ncluster, szx)
-            res = zeros(isize, isize);
+        function out = merge(obj, input)
+            isize = input.isize;
+            ncluster = input.ncluster;
+            szx = input.szx;
+            out = zeros(isize, isize);
             for i=1:ncluster
-                load([obj.resfold '/' 'result_' obj.varmat int2str(i) '.mat']); % [count] variable is loaded
+                load([obj.parameters.resfold '/' 'result_' obj.parameters.varmat int2str(i) '.mat']); 
+                % [count] variable is loaded
                 if (i ~= ncluster)
-                    res(:,szx*(i-1)+1:szx*i) = count;
+                    out(:,szx*(i-1)+1:szx*i) = count;
                 else
-                    res(:,szx*(i-1)+1:end) = count;
+                    out(:,szx*(i-1)+1:end) = count;
                 end
             end
         end

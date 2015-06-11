@@ -11,8 +11,8 @@ classdef ADistributor
     end
     
     methods (Abstract) % these methods must be redefined in derived class
-        split(obj, input);
-        merge(obj);
+        output = split(obj, input);
+        output = merge(obj, input);
         %wrap(obj); % wrapper must be provided as a separate function
     end
     
@@ -20,7 +20,6 @@ classdef ADistributor
         % ctor
         function obj = ADistributor(login, ppath, ipaddrs, pathsrc, remmat, ...
                 pathout, varmat, pathcurr, sleeptime, resfold, printout)
-            fprintf('debug\n');
             ppath = correctpath(ppath);
             pathsrc = correctpath(pathsrc);
             pathout = correctpath(pathout);

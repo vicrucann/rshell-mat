@@ -2,21 +2,11 @@
 % One examples is considered: calculation of madelbrot set
 % 2015 Victoria Rudakova, vicrucann@gmail.com
 
-%% Setting up
+%% Setting up, input parameters
 %clc; clear; close all;
 login = 'cryo';
 ppath = '/home/cryo/dop'; % distributed operations, destination on remote
 cpath = pwd;
-slash = cpath(end);
-if (~isequal(slash, '\') && ~isequal(slash, '/'))
-    archstr = computer('arch');
-    if (isequal(archstr(1:3), 'win')) % Windows
-        cpath = [cpath '\'];
-    else % Linux
-        cpath = [cpath '/'];
-    end
-end
-
 ipaddrs = ['130.132.104.236' ' ' '172.21.9.92' ' ' '172.23.2.105' ' ' '172.23.5.77']; % list of ip addresses
 pathsrc = cpath;
 remmat = 'mandelbrot'; % name of matlab function that will be launched on remote server
@@ -25,11 +15,11 @@ varmat = 'mnd'; % when splitting data, they will be saved under varmat.mat name 
 pathcurr = cpath;
 sleeptime = 5;
 resfold = 'dres'; % name of the result folder
-bashscript = fullfile(pwd,'dhead.sh'); % main bash script that organizes data processing
 printout = 1; % print the bash output (1) or not (0)
 
-[ncluster ~] = find(ipaddrs==' '); % to break data into n clusters (as many as given servers)
-ncluster = size(ncluster,2)+1;
+% ctor
+distr = MandelbrotDistributor(login, ppath, ipaddrs, pathsrc, remmat, ...
+    pathout, varmat, pathcurr, sleeptime, resfold, printout);
 
 %% Mandelbrot set
 % Given resolution and iteration number, find corresponding Mandelbrot set
@@ -45,82 +35,82 @@ figpos = [100 100 1000 1000];
 x = linspace( xlim(1), xlim(2), isize );
 y = linspace( ylim(1), ylim(2), isize );
 [xGrid,yGrid] = meshgrid( x, y );
-szx = ceil(size(xGrid,2)/ncluster);
+szx = ceil(size(xGrid,2)/distr.ncluster);
 
-% perform calculation by distributing among the servers
-% split (assume we break along "X" dimension)
-fprintf('\n\nCalculation using remotes \n')
-tic();
-for i=1:ncluster
-    if (i ~= ncluster)
-        xi=xGrid(:, szx*(i-1)+1:szx*i);
-        yi=yGrid(:, szx*(i-1)+1:szx*i);
-    else
-        xi=xGrid(:, szx*(i-1)+1:end);
-        yi=yGrid(:, szx*(i-1)+1:end);
-    end
-    save([varmat int2str(i) '.mat'], 'xi', 'yi', 'iter');
-end
-system(['chmod u+x ' bashscript])
-if printout
-    cmdStr = [bashscript ' ' login ' ' ppath ' ' ipaddrs ' '...
-        pathsrc ' ' remmat ' ' pathout ' ' varmat ' ' pathcurr ' ' ...
-        int2str(sleeptime) ' ' resfold];
-else
-    cmdStr = [bashscript ' ' login ' ' ppath ' ' ipaddrs ' '...
-        pathsrc ' ' remmat ' ' pathout ' ' varmat ' ' pathcurr ' ' ...
-        int2str(sleeptime) ' ' resfold '>' remmat '.log 2>&1'];
-end
-% perform the command
-system(cmdStr)
+%h_split = @mandel_split;
+in_split = struct('ncluster', ncluster, 'xGrid', xGrid, 'yGrid', yGrid,...
+    'szx', szx, 'varmat', varmat, 'iter', iter);
+%h_wrap = @mandel_wrap;
+i_wrap = 0;
+%h_merge = @mande_merge;
+in_merge = struct('isize', isize, 'ncluster', ncluster, 'szx', szx);
 
-% merge the results
-res = zeros(isize, isize);
-for i=1:ncluster
-    load([resfold '/' 'result_' varmat int2str(i) '.mat']);
-    if (i ~= ncluster)
-        res(:,szx*(i-1)+1:szx*i) = count;
-    else
-        res(:,szx*(i-1)+1:end) = count;
-    end
-end
-tcluster = toc();
+out_split = distr.split(in_split);
+distr.launch();
+out_merge = distr.merge(in_merge);
 
-% perform the full calculation of mandelbrot on local
-fprintf('Calculation on local...\n');
-tic();
-z0 = xGrid + 1i*yGrid;
-count0 = ones( size(z0) );
-z = z0;
-for n = 0:iter
-    z = z.*z + z0;
-    inside = abs( z )<=2;
-    count0 = count0 + inside;
-    if (mod(n, iter*0.25) == 0)
-        fprintf('%i', ceil(n/iter*100));
-    elseif (mod(n,iter*0.05) == 0)
-        fprintf('.');
-    end
-end
-count0 = log( count0 );
-tlocal=toc();
-fprintf( ' -> done\n');
+%distributor(h_split, h_wrap, h_merge, i_split, i_wrap, i_merge, dparams, printout);
 
-fprintf('\n\nLocal time vs distributed time: \n    %1.2fsecs vs %1.2fsecs \n', tlocal, tcluster);
+% system(['chmod u+x ' bashscript])
+% if printout
+%     cmdStr = [bashscript ' ' login ' ' ppath ' ' ipaddrs ' '...
+%         pathsrc ' ' remmat ' ' pathout ' ' varmat ' ' pathcurr ' ' ...
+%         int2str(sleeptime) ' ' resfold];
+% else
+%     cmdStr = [bashscript ' ' login ' ' ppath ' ' ipaddrs ' '...
+%         pathsrc ' ' remmat ' ' pathout ' ' varmat ' ' pathcurr ' ' ...
+%         int2str(sleeptime) ' ' resfold '>' remmat '.log 2>&1'];
+% end
+% % perform the command
+% system(cmdStr)
+% 
+% % merge the results
+% res = zeros(isize, isize);
+% for i=1:ncluster
+%     load([resfold '/' 'result_' varmat int2str(i) '.mat']);
+%     if (i ~= ncluster)
+%         res(:,szx*(i-1)+1:szx*i) = count;
+%     else
+%         res(:,szx*(i-1)+1:end) = count;
+%     end
+% end
+% tcluster = toc();
 
-% display local result
-figure;
-fig = gcf;
-fig.Position = figpos;
-imagesc( x, y, count0 );
-axis image
-colormap( [jet();flipud( jet() );0 0 0] );
-
+% % perform the full calculation of mandelbrot on local
+% fprintf('Calculation on local...\n');
+% tic();
+% z0 = xGrid + 1i*yGrid;
+% count0 = ones( size(z0) );
+% z = z0;
+% for n = 0:iter
+%     z = z.*z + z0;
+%     inside = abs( z )<=2;
+%     count0 = count0 + inside;
+%     if (mod(n, iter*0.25) == 0)
+%         fprintf('%i', ceil(n/iter*100));
+%     elseif (mod(n,iter*0.05) == 0)
+%         fprintf('.');
+%     end
+% end
+% count0 = log( count0 );
+% tlocal=toc();
+% fprintf( ' -> done\n');
+% 
+% fprintf('\n\nLocal time vs distributed time: \n    %1.2fsecs vs %1.2fsecs \n', tlocal, tcluster);
+% 
+% % display local result
+% figure;
+% fig = gcf;
+% fig.Position = figpos;
+% imagesc( x, y, count0 );
+% axis image
+% colormap( [jet();flipud( jet() );0 0 0] );
+% 
 % display distributed result
 figure;
 fig = gcf;
 fig.Position = figpos;
-imagesc( x, y, res );
+imagesc( x, y, out_merge );
 axis image
 colormap( [jet();flipud( jet() );0 0 0] );
 
