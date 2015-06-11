@@ -11,7 +11,7 @@ classdef ADistributor
     end
     
     methods (Abstract) % these methods must be redefined in derived class
-        split(obj);
+        split(obj, input);
         merge(obj);
         %wrap(obj); % wrapper must be provided as a separate function
     end
@@ -20,9 +20,15 @@ classdef ADistributor
         % ctor
         function obj = ADistributor(login, ppath, ipaddrs, pathsrc, remmat, ...
                 pathout, varmat, pathcurr, sleeptime, resfold, printout)
-            obj.parameters = struct('login', login, 'ppath', correct_path(ppath), 'ipaddrs', ipaddrs, 'pathsrc', ...
-                correct_path(pathsrc), 'remmat', remmat, 'pathout', correct_path(pathout), 'varmat', varmat,...
-                'pathcurr', correct_path(pathcurr), 'sleeptime', sleeptime, 'resfold', correct_path(resfold));
+            fprintf('debug\n');
+            ppath = correctpath(ppath);
+            pathsrc = correctpath(pathsrc);
+            pathout = correctpath(pathout);
+            pathcurr = correctpath(pathcurr);
+            resfold = correctpath(resfold);
+            obj.parameters = struct('login', login, 'ppath', ppath, 'ipaddrs', ipaddrs, 'pathsrc', ...
+                pathsrc, 'remmat', remmat, 'pathout', pathout, 'varmat', varmat,...
+                'pathcurr', pathcurr, 'sleeptime', sleeptime, 'resfold', resfold);
             obj.bashscript = fullfile(pwd,'dhead.sh');
             obj.printout = printout;
             [obj.ncluster, ~] = find(ipaddrs==' '); % to break data into n clusters (as many as given servers)
@@ -36,13 +42,13 @@ classdef ADistributor
             
             system(['chmod u+x ' obj.bashscript])
             if obj.printout
-                cmdStr = [obj.bashscript ' ' obj.login ' ' obj.ppath ' ' obj.ipaddrs ' '...
-                    obj.pathsrc ' ' obj.remmat ' ' obj.pathout ' ' obj.varmat ' ' obj.pathcurr ' ' ...
-                    int2str(obj.sleeptime) ' ' obj.resfold];
+                cmdStr = [obj.parameters.bashscript ' ' obj.parameters.login ' ' obj.parameters.ppath ' ' obj.parameters.ipaddrs ' '...
+                    obj.parameters.pathsrc ' ' obj.parameters.remmat ' ' obj.parameters.pathout ' ' obj.parameters.varmat ' ' obj.parameters.pathcurr ' ' ...
+                    int2str(obj.parameters.sleeptime) ' ' obj.parameters.resfold];
             else
-                cmdStr = [obj.bashscript ' ' obj.login ' ' obj.ppath ' ' obj.ipaddrs ' '...
-                    obj.pathsrc ' ' obj.remmat ' ' obj.pathout ' ' obj.varmat ' ' obj.pathcurr ' ' ...
-                    int2str(obj.sleeptime) ' ' obj.resfold '>' obj.remmat '.log 2>&1'];
+                cmdStr = [obj.parameters.bashscript ' ' obj.parameters.login ' ' obj.parameters.ppath ' ' obj.parameters.ipaddrs ' '...
+                    obj.parameters.pathsrc ' ' obj.parameters.remmat ' ' obj.parameters.pathout ' ' obj.parameters.varmat ' ' obj.parameters.pathcurr ' ' ...
+                    int2str(obj.parameters.sleeptime) ' ' obj.parameters.resfold '>' obj.parameters.remmat '.log 2>&1'];
             end
             % perform the command
             system(cmdStr)
@@ -55,15 +61,27 @@ classdef ADistributor
 
 end
 
-function cpath = correct_path(cpath)
-slash = cpath(end);
-if (~isequal(slash, '\') && ~isequal(slash, '/'))
-    archstr = computer('arch');
-    if (isequal(archstr(1:3), 'win')) % Windows
-        cpath = [cpath '\'];
-    else % Linux
-        cpath = [cpath '/'];
-    end
+function os = getOS()
+archstr = computer('arch');
+if (isequal(archstr(1:3), 'win')) % Windows
+    os = 1;
+elseif (isequal(archstr(1:5),'glnxa')) % Linux
+    os = 0;
+else % other, not supported
+    error('Unrecognized or unsupported architecture');
+end
+end
+
+function path_platform = correctpath(path)
+os = getOS();
+if (strcmp(path(end), '\') || strcmp(path(end), '/'))
+    path = path(1:end-1);
+end
+path_platform = path;
+if os % Windows
+    path_platform = [path_platform '\'];
+else % Linux
+    path_platform = [path_platform '/'];
 end
 end
 
