@@ -7,7 +7,7 @@
 login = 'cryo';
 ppath = '/home/cryo/dop'; % distributed operations, destination on remote
 cpath = pwd;
-ipaddrs = ['130.132.104.236' ' ' '172.21.9.92' ' ' '172.23.2.105' ' ' '172.23.5.77']; % list of ip addresses
+ipaddrs = ['172.21.9.92' ' ' '172.23.2.105' ' ' '172.23.5.77']; % list of ip addresses
 pathsrc = cpath;
 remmat = 'mandelbrot'; % name of matlab function that will be launched on remote server
 pathout = cpath;
@@ -20,6 +20,9 @@ printout = 1; % print the bash output (1) or not (0)
 % ctor
 distr = MandelbrotDistributor(login, ppath, ipaddrs, pathsrc, remmat, ...
     pathout, varmat, pathcurr, sleeptime, resfold, printout);
+
+%hf = @distr.printclust;
+%hf();
 
 %% Mandelbrot set
 % Given resolution and iteration number, find corresponding Mandelbrot set
@@ -38,43 +41,16 @@ y = linspace( ylim(1), ylim(2), isize );
 szx = ceil(size(xGrid,2)/distr.ncluster);
 
 %h_split = @mandel_split;
-in_split = struct('ncluster', ncluster, 'xGrid', xGrid, 'yGrid', yGrid,...
+in_split = struct('ncluster', distr.ncluster, 'xGrid', xGrid, 'yGrid', yGrid,...
     'szx', szx, 'varmat', varmat, 'iter', iter);
 %h_wrap = @mandel_wrap;
-i_wrap = 0;
+in_kernel = 0;
 %h_merge = @mande_merge;
-in_merge = struct('isize', isize, 'ncluster', ncluster, 'szx', szx);
+in_merge = struct('isize', isize, 'ncluster', distr.ncluster, 'szx', szx);
 
 out_split = distr.split(in_split);
-distr.launch();
+distr.launch(in_kernel);
 out_merge = distr.merge(in_merge);
-
-%distributor(h_split, h_wrap, h_merge, i_split, i_wrap, i_merge, dparams, printout);
-
-% system(['chmod u+x ' bashscript])
-% if printout
-%     cmdStr = [bashscript ' ' login ' ' ppath ' ' ipaddrs ' '...
-%         pathsrc ' ' remmat ' ' pathout ' ' varmat ' ' pathcurr ' ' ...
-%         int2str(sleeptime) ' ' resfold];
-% else
-%     cmdStr = [bashscript ' ' login ' ' ppath ' ' ipaddrs ' '...
-%         pathsrc ' ' remmat ' ' pathout ' ' varmat ' ' pathcurr ' ' ...
-%         int2str(sleeptime) ' ' resfold '>' remmat '.log 2>&1'];
-% end
-% % perform the command
-% system(cmdStr)
-% 
-% % merge the results
-% res = zeros(isize, isize);
-% for i=1:ncluster
-%     load([resfold '/' 'result_' varmat int2str(i) '.mat']);
-%     if (i ~= ncluster)
-%         res(:,szx*(i-1)+1:szx*i) = count;
-%     else
-%         res(:,szx*(i-1)+1:end) = count;
-%     end
-% end
-% tcluster = toc();
 
 % % perform the full calculation of mandelbrot on local
 % fprintf('Calculation on local...\n');

@@ -1,19 +1,23 @@
-classdef ADistributor
+classdef ADistributor < handle
     %ADISTRIBUTOR abstract class to manage split, distribution and merging of data
     %   User must derive their custom class and redefine all the abstract
-    %   methods: splitting, merging and wrapping.
+    %   methods: splitting, merging and wrapping. For more info on how to
+    %   construct a subclass, check 
+    %   http://www.mathworks.com/help/matlab/matlab_oop/class-constructor-methods.html#brd2m9e-6
     
-    properties (GetAccess = 'public', SetAccess = 'private')
+    properties (GetAccess = 'public', SetAccess = 'protected')
         bashscript;
         printout;
         parameters;
         ncluster;
+        h_kernel; % handle to kernel function
+        in_kernel; % input parameters for kernel function, struct
     end
     
     methods (Abstract) % these methods must be redefined in derived class
         output = split(obj, input);
         output = merge(obj, input);
-        %wrap(obj); % wrapper must be provided as a separate function
+        output = kernel(obj);
     end
     
     methods
@@ -35,25 +39,26 @@ classdef ADistributor
         end
         
         % launching framework: split, distribute, merge
-        function status = launch(obj)
-            % split data
-            obj.split();
+        function status = launch(obj, input)   
+            % remmat initialization
+            obj.in_kernel = input;
+            h_kernel = @obj.kernel;
             
             system(['chmod u+x ' obj.bashscript])
             if obj.printout
                 cmdStr = [obj.parameters.bashscript ' ' obj.parameters.login ' ' obj.parameters.ppath ' ' obj.parameters.ipaddrs ' '...
-                    obj.parameters.pathsrc ' ' obj.parameters.remmat ' ' obj.parameters.pathout ' ' obj.parameters.varmat ' ' obj.parameters.pathcurr ' ' ...
+                    obj.parameters.pathsrc ' ' obj.parameters.remmat ' ' obj.parameters.pathout ' ' ...
+                    obj.parameters.varmat ' ' obj.parameters.pathcurr ' ' ...
                     int2str(obj.parameters.sleeptime) ' ' obj.parameters.resfold];
             else
                 cmdStr = [obj.parameters.bashscript ' ' obj.parameters.login ' ' obj.parameters.ppath ' ' obj.parameters.ipaddrs ' '...
-                    obj.parameters.pathsrc ' ' obj.parameters.remmat ' ' obj.parameters.pathout ' ' obj.parameters.varmat ' ' obj.parameters.pathcurr ' ' ...
+                    obj.parameters.pathsrc ' ' obj.parameters.remmat ' ' obj.parameters.pathout ' '...
+                    obj.parameters.varmat ' ' obj.parameters.pathcurr ' ' ...
                     int2str(obj.parameters.sleeptime) ' ' obj.parameters.resfold '>' obj.parameters.remmat '.log 2>&1'];
             end
             % perform the command
             system(cmdStr)
             
-            % merge data
-            obj.merge();
             status = 1;
         end
     end

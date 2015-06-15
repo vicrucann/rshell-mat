@@ -10,6 +10,11 @@ classdef MandelbrotDistributor < ADistributor
     
     methods
         % ctor
+%         function printclust(obj)
+%             res = obj.ncluster;
+%             fprintf('res=%d\n',res);
+%         end
+        
         function obj = MandelbrotDistributor(login, ppath, ipaddrs, pathsrc, remmat, ...
                 pathout, varmat, pathcurr, sleeptime, resfold, printout)
             obj = obj@ADistributor(login, ppath, ipaddrs, pathsrc, remmat, ...
@@ -54,7 +59,31 @@ classdef MandelbrotDistributor < ADistributor
             end
         end
         
+        % redefine kernel (this function will be run on remote)
+        % result will be saved in remote working directory
+        function out = kernel(~, fname, resfname) % add any other parameters that will be passed from dserver.sh
+            fprintf('The data file provided: %s\n', fname);
+            fptintf('The result will be saved to: %s\n', resfname);
+            load(fname);
+            xGrid=xi;
+            yGrid=yi;
+            maxIterations=iter;
+            %------------------------
+            
+            z0 = xGrid + 1i*yGrid;
+            count = ones( size(z0) );
+            
+            z = z0;
+            for n = 0:maxIterations
+                z = z.*z + z0;
+                inside = abs( z )<=2;
+                count = count + inside;
+            end
+            count = log( count );
+            save(resfname, 'count');
+            out = struct('count', count);
+        end
     end
-    
 end
+
 
