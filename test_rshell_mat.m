@@ -1,15 +1,13 @@
-%% Example of matlab scrips that launches bash script to control data parallelization among servers
-% One examples is considered: calculation of madelbrot set
+%% Matlab distributor example - calcualtion of Mandelbrot set using Distributor class
+%   to split, distribute and merge the data.
 % 2015 Victoria Rudakova, vicrucann@gmail.com
 
-%% Setting up, input parameters
-%clc; clear; close all;
+%% Input parameters for Distributor constructor
+clc; clear; close all;
 login = 'cryo';
 ppath = '/home/cryo/dop'; % distributed operations, destination on remote
 cpath = pwd;
 ipaddrs = ['172.21.9.92' ' ' '172.23.2.105' ' ' '172.23.5.77']; % list of ip addresses
-pathsrc = cpath;
-remmat = 'mandelbrot'; % name of matlab function that will be launched on remote server
 pathout = cpath;
 varmat = 'mnd'; % when splitting data, they will be saved under varmat.mat name on disk
 pathcurr = cpath;
@@ -18,16 +16,10 @@ resfold = 'dres'; % name of the result folder
 printout = 1; % print the bash output (1) or not (0)
 
 % ctor
-distr = MandelbrotDistributor(login, ppath, ipaddrs, pathsrc, remmat, ...
+distr = Distributor(login, ppath, ipaddrs, ...
     pathout, varmat, pathcurr, sleeptime, resfold, printout);
 
-%hf = @distr.printclust;
-%hf();
-
-%% Mandelbrot set
-% Given resolution and iteration number, find corresponding Mandelbrot set
-
-% input parameters
+%% Mandelbrot pre-calcualtion and input data
 iter = 2000;
 isize = 4000;
 xlim = [-2, 1]; % to split
@@ -40,17 +32,24 @@ y = linspace( ylim(1), ylim(2), isize );
 [xGrid,yGrid] = meshgrid( x, y );
 szx = ceil(size(xGrid,2)/distr.ncluster);
 
-%h_split = @mandel_split;
+%% Distributor launch input parameters
+h_split = @mandel_split;
 in_split = struct('ncluster', distr.ncluster, 'xGrid', xGrid, 'yGrid', yGrid,...
     'szx', szx, 'varmat', varmat, 'iter', iter);
-%h_wrap = @mandel_wrap;
-in_kernel = 0;
-%h_merge = @mande_merge;
-in_merge = struct('isize', isize, 'ncluster', distr.ncluster, 'szx', szx);
+h_kernel = @mandel_kernel;
+h_merge = @mandel_merge;
+in_merge = struct('isize', isize, 'ncluster', distr.ncluster, 'szx', szx, ...
+    'resfold', resfold, 'varmat', varmat);
 
-out_split = distr.split(in_split);
-distr.launch(in_kernel);
-out_merge = distr.merge(in_merge);
+out_merge = distr.launch(h_split, in_split, h_kernel, h_merge, in_merge);
+
+%% Usage of obtained result - plot
+figure;
+fig = gcf;
+fig.Position = figpos;
+imagesc( x, y, out_merge );
+axis image
+colormap( [jet();flipud( jet() );0 0 0] );
 
 % % perform the full calculation of mandelbrot on local
 % fprintf('Calculation on local...\n');
@@ -81,12 +80,5 @@ out_merge = distr.merge(in_merge);
 % imagesc( x, y, count0 );
 % axis image
 % colormap( [jet();flipud( jet() );0 0 0] );
-% 
-% display distributed result
-figure;
-fig = gcf;
-fig.Position = figpos;
-imagesc( x, y, out_merge );
-axis image
-colormap( [jet();flipud( jet() );0 0 0] );
+
 
