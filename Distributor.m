@@ -42,7 +42,10 @@ classdef Distributor < handle
             [obj.ncluster, ~] = find(ipaddrs==' '); % to break data into n clusters (as many as given servers)
             obj.ncluster = size(obj.ncluster,2)+1;
             % check if servers are reacheable
-            
+            tester = fullfile(pwd,'dtest.sh');
+            system(['chmod u+x ' tester]);
+            cmdStr=[tester ' ' login ' ' ipaddrs];
+            system(cmdStr);
             fprintf('Distributor initialized successfully\n');
         end
         
