@@ -32,12 +32,12 @@ kill $SSH_AGENT_PID
 ## Customizing and running your own *Distributor*
 
 Use the following steps to run your `Distributor`:  
-1. *Distributor* variable declaration by running a constructor (see what are the input parameters in [parameter list](https://github.com/vicrucann/rshell-mat/tree/auto#list-of-parameters))  
+*Distributor* variable declaration by running a constructor (see what are the input parameters in [parameter list](https://github.com/vicrucann/rshell-mat/tree/auto#list-of-parameters))  
 ```
 d = Distributor(login, ppath, ipaddrs, pathout, varmat, ...
     pathcurr, sleeptime, resfold, printout);
-```  
-2. Obtain function handles on your `split`, `kernel` and `merge` functions, as well as initialize the input structures for each of these functions:  
+```   
+Obtain function handles on your `split`, `kernel` and `merge` functions, as well as initialize the input structures for each of these functions:  
 ```
 in_split = struct('field1', val1, 'field2', val2, ...);
 in_merge = struct('field1', val1, 'field2', val2, ...);
@@ -45,11 +45,11 @@ h_split = @split;
 h_kernel = @kernel;
 h_merge = @merge; 
 ```  
-3. Launch the *Distributor*:  
+Launch the *Distributor*:  
 ```
 out_merge = d.launch(h_split, in_split, h_kernel, h_merge, in_merge);
 ```
-4. Use the output variable \ structure further in your Matlab code:  
+Use the output variable \ structure further in your Matlab code:  
 ```
 val1 = out_merge.field1;
 val2 = out_merge.field2;
