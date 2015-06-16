@@ -35,8 +35,8 @@ kill $SSH_AGENT_PID
 Use the following steps to run your `Distributor`:  
 *Distributor* variable declaration by running a constructor (see what are the input parameters in [parameter list](https://github.com/vicrucann/rshell-mat/tree/auto#list-of-parameters))  
 ```
-d = Distributor(login, ppath, ipaddrs, pathout, varmat, ...
-    pathcurr, sleeptime, resfold, printout);
+d = Distributor(login, path_rem, ipaddrs, path_vars, vars, ...
+    path_cache, cache, path_curr, sleeptime, path_res, printout);
 ```   
 Obtain function handles on your `split`, `kernel` and `merge` functions, as well as initialize the input structures for each of these functions (see [function signatures design](https://github.com/vicrucann/rshell-mat/tree/auto#providing-your-custom-functions-for-split-merge-and-wrapping-kernel)):  
 ```
@@ -61,19 +61,23 @@ val2 = out_merge.field2;
 
 `login` is a login id for the remotes (assumed the same for all the remotes), in a string format, e.g.: `login = 'remote_user';`.   
 
-`path` is a workspace path on **remote** servers (if the folder does not exist, it will be created), e.g.: `path = '/home/remoteu/tmp'`.   
+`path_rem` is a workspace path on **remote** servers (if the folder does not exist, it will be created), e.g.: `path = '/home/remoteu/tmp'`.   
 
 `ipaddrs` is a list of IP addresses, in a string format; it has a form of `['ipaddrs1' ' ' 'ipaddrs2' ' ' ...]` - each IP address must be separated by **one** space character from its neighbors.  
 
-`pathout` is a folder path where all the `varmat` data (Matlab worspace variables) is stored and loaded from.  
+`path_vars` is a folder path where all the `vars` data (Matlab worspace variables) is stored and loaded from.  
 
-`varmat` is a root name of temporal files where the work variables are saved to, in a string format.   
+`vars` is a root name of temporal files where the work variables are saved to, in a string format.   
 
-`pathcurr` is a folder path where the .sh scripts are located, for the Mandelbrot example case it is a full path to the current folder.  
+`path_cache` is a folder name where the `cache` data (data on disk) is stored.  
+
+`cache` - is a root name of `.dat` files, if any present.  
+
+`path_curr` is a folder path where the .sh scripts are located, for the Mandelbrot example case it is a full path to the current folder.  
 
 `sleeptime` is a pause interval in seconds, integer, it is used inside *dhead.sh* to wait until the tasks are finished on remotes; you may want to increase it for heavy data computations.    
 
-`resfold` is a name of a temporal folder on **local** machine where the result files will be copied to, in a string format.  
+`path_res` is a name of a temporal folder on **local** machine where the result files will be copied to, in a string format.  
 
 `printout` is a boolean (`0` or `1`) variable that allows (`1`) or suppresses (`0`) any `printf` output to the Matlab command line. Note that for big repetitive data computations it is adviced to turn it off for faster processing time.  
 
