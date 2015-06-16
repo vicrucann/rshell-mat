@@ -23,7 +23,7 @@ classdef Distributor < handle
         % ctor
         function obj = Distributor(login, path_rem, ipaddrs, path_vars, vars, ...
                 path_cache, cache, path_curr, sleeptime, path_res, printout)
-            if (path_cache ==0 || cache == 0)
+            if (sum(path_cache == 0) || sum(cache == 0))
                 path_cache = '0';
                 cache = '0';
             end
@@ -46,7 +46,7 @@ classdef Distributor < handle
             [obj.ncluster, ~] = find(ipaddrs==' '); % to break data into n clusters (as many as given servers)
             obj.ncluster = size(obj.ncluster,2)+1;
             % check if servers are reacheable
-            tester = fullfile(pwd,'dtest.sh');
+            tester = [path_curr 'dtest.sh']; % can be moved to separate func which is called from launch()
             system(['chmod u+x ' tester]);
             cmdStr=[tester ' ' login ' ' ipaddrs];
             system(cmdStr);
