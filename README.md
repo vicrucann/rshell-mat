@@ -29,6 +29,7 @@ matlab
 ```
 kill $SSH_AGENT_PID
 ```  
+
 ## Customizing and running your own *Distributor*
 
 Use the following steps to run your `Distributor`:  
@@ -37,7 +38,7 @@ Use the following steps to run your `Distributor`:
 d = Distributor(login, ppath, ipaddrs, pathout, varmat, ...
     pathcurr, sleeptime, resfold, printout);
 ```   
-Obtain function handles on your `split`, `kernel` and `merge` functions, as well as initialize the input structures for each of these functions:  
+Obtain function handles on your `split`, `kernel` and `merge` functions, as well as initialize the input structures for each of these functions (see [function signatures design](https://github.com/vicrucann/rshell-mat/tree/auto#providing-your-custom-functions-for-split-merge-and-wrapping-kernel)):  
 ```
 in_split = struct('field1', val1, 'field2', val2, ...);
 in_merge = struct('field1', val1, 'field2', val2, ...);
@@ -77,11 +78,17 @@ val2 = out_merge.field2;
 `printout` is a boolean (`0` or `1`) variable that allows (`1`) or suppresses (`0`) any `printf` output to the Matlab command line. Note that for big repetitive data computations it is adviced to turn it off for faster processing time.  
 
 ## Providing your custom functions for split, merge and wrapping (kernel)  
+
 These are the signatures of three functions that user must provide for their *Distributor*:  
 * `function out = split(input)`  
-* `function out = kernel(input1, inout2, ...)`  
+* `function out = kernel(file_mat, res_fname, file_dat)`  
 * `function out = merge(input)`  
-The `split` and `merge` functions have their own `input` and `out` variables which are a Matlab structures that contain the necessary variables as a fields. The `kernel` function may have different variables as input (refer to the example in order to figure out how to model those functions for your own *Distributor*).  
+
+The `split` and `merge` functions have their own `input` and `out` variables which are a Matlab `struct` data types that contain the necessary variables as fields.  
+
+The `kernel` function have three variables as input: `file_mat` is a `.mat` filename where Matlab workspace variables are kept; `res_fname` is a filename where the result will be written to for the current remote (string format); and `file_dat` is a `.dat` filename where Matlab cache variable is stored (could be left to `0` if none is used). 
+
+The necessity to have `file_dat` might not be obvious, but we use **rshell-mat** in conjunction with [CachedNDArray](https://github.com/vicrucann/cacharr) data structure for our [cryo3D](https://github.com/vicrucann/cryo3d) project (see [Notes](https://github.com/vicrucann/rshell-mat/tree/auto#notes) for more details), for that reason we figured out that not all the data can be stored and transferred as `.mat` file, but in case if there is any other disk data, it could be transferred and used as a `.dat` file.  
 
 ## Notes  
 
