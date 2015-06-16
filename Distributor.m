@@ -6,37 +6,41 @@ classdef Distributor < handle
     properties (GetAccess = 'public', SetAccess = 'private')
         bashscript;
         printout;
-        parameters;
         ncluster;
         login;
-        ppath;
+        path_rem;
         ipaddrs;
-        pathout;
-        varmat;
-        pathcurr;
+        path_vars;
+        vars;
+        path_curr;
         sleeptime;
-        resfold;
+        path_res;
+        path_cache;
+        cache;
     end
     
     methods
         % ctor
-        function obj = Distributor(login, ppath, ipaddrs, ...
-                pathout, varmat, pathcurr, sleeptime, resfold, printout)
-            ppath = correctpath(ppath);
-            pathout = correctpath(pathout);
-            pathcurr = correctpath(pathcurr);
-            resfold = correctpath(resfold);
+        function obj = Distributor(login, path_rem, ipaddrs, path_vars, vars, ...
+                path_cache, cache, path_curr, sleeptime, path_res, printout)
+            if (path_cache ==0 || cache == 0)
+                path_cache = '0';
+                cache = '0';
+            end
+            path_rem = correctpath(path_rem);
+            path_vars = correctpath(path_vars);
+            path_curr = correctpath(path_curr);
+            path_res = correctpath(path_res);
             obj.login=login;
-            obj.ppath=ppath;
+            obj.path_rem=path_rem;
             obj.ipaddrs=ipaddrs;
-            obj.pathout=pathout;
-            obj.varmat=varmat;
-            obj.pathcurr=pathcurr;
+            obj.path_vars=path_vars;
+            obj.vars=vars;
+            obj.path_cache=path_cache;
+            obj.cache=cache;
+            obj.path_curr=path_curr;
             obj.sleeptime=sleeptime;
-            obj.resfold=resfold;
-            %obj.parameters = struct('login', login, 'ppath', ppath, 'ipaddrs', ipaddrs, 'pathsrc', ...
-            %    pathsrc, 'remmat', remmat, 'pathout', pathout, 'varmat', varmat,...
-            %    'pathcurr', pathcurr, 'sleeptime', sleeptime, 'resfold', resfold);
+            obj.path_res=path_res;
             obj.bashscript = fullfile(pwd,'dhead.sh');
             obj.printout = printout;
             [obj.ncluster, ~] = find(ipaddrs==' '); % to break data into n clusters (as many as given servers)
@@ -63,13 +67,13 @@ classdef Distributor < handle
             
             system(['chmod u+x ' obj.bashscript])
             if obj.printout
-                cmdStr = [obj.bashscript ' ' obj.login ' ' obj.ppath ' ' obj.ipaddrs ' '...
-                    pathsrc ' ' remmat ' ' obj.pathout ' ' obj.varmat ' ' obj.pathcurr ' ' ...
-                    int2str(obj.sleeptime) ' ' obj.resfold];
+                cmdStr = [obj.bashscript ' ' obj.login ' ' obj.path_rem ' ' obj.ipaddrs ' '...
+                    pathsrc ' ' remmat ' ' obj.path_vars ' ' obj.vars ' ' obj.path_cache ' ' obj.cache ' ' ...
+                    obj.path_curr ' ' int2str(obj.sleeptime) ' ' obj.path_res];
             else
-                cmdStr = [obj.bashscript ' ' obj.login ' ' obj.ppath ' ' obj.ipaddrs ' '...
-                    pathsrc ' ' remmat ' ' obj.pathout ' ' obj.varmat ' ' obj.pathcurr ' ' ...
-                    int2str(obj.sleeptime) ' ' obj.resfold '>' obj.remmat '.log 2>&1'];
+                cmdStr = [obj.bashscript ' ' obj.login ' ' obj.path_rem ' ' obj.ipaddrs ' '...
+                    pathsrc ' ' remmat ' ' obj.path_vars ' ' obj.vars ' ' obj.path_cache ' ' obj.cache ' ' ...
+                    obj.path_curr ' ' int2str(obj.sleeptime) ' ' obj.path_res '>' obj.remmat '.log 2>&1'];
             end
             % perform the command
             fprintf('Launching the bash scripts\n');

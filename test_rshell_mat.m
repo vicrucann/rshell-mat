@@ -5,19 +5,21 @@
 %% Input parameters for Distributor constructor
 clc; clear; close all;
 login = 'cryo';
-ppath = '/home/cryo/dop'; % distributed operations, destination on remote
+path_rem = '/home/cryo/dop'; % distributed operations, destination on remote
 cpath = pwd;
 ipaddrs = ['172.21.9.92' ' ' '172.23.2.105' ' ' '172.23.5.77']; % list of ip addresses
-pathout = cpath;
-varmat = 'mnd'; % when splitting data, they will be saved under varmat.mat name on disk
-pathcurr = cpath;
+path_vars = cpath;
+vars = 'mnd'; % when splitting data, they will be saved under varmat.mat name on disk
+path_curr = cpath;
+path_cache = 0;
+cache = 0;
 sleeptime = 5;
-resfold = 'dres'; % name of the result folder
+path_res = 'dres'; % name of the result folder
 printout = 1; % print the bash output (1) or not (0)
 
 % ctor
-distr = Distributor(login, ppath, ipaddrs, ...
-    pathout, varmat, pathcurr, sleeptime, resfold, printout);
+distr = Distributor(login, path_rem, ipaddrs, path_vars, vars, path_cache, cache, ...
+    path_curr, sleeptime, path_res, printout);
 
 %% Mandelbrot pre-calcualtion and input data
 iter = 2000;
@@ -35,11 +37,11 @@ szx = ceil(size(xGrid,2)/distr.ncluster);
 %% Distributor launch input parameters
 h_split = @mandel_split;
 in_split = struct('ncluster', distr.ncluster, 'xGrid', xGrid, 'yGrid', yGrid,...
-    'szx', szx, 'varmat', varmat, 'iter', iter);
+    'szx', szx, 'varmat', vars, 'iter', iter);
 h_kernel = @mandel_kernel;
 h_merge = @mandel_merge;
 in_merge = struct('isize', isize, 'ncluster', distr.ncluster, 'szx', szx, ...
-    'resfold', resfold, 'varmat', varmat);
+    'resfold', path_res, 'varmat', vars);
 
 out_merge = distr.launch(h_split, in_split, h_kernel, h_merge, in_merge);
 

@@ -124,7 +124,7 @@ printf "Pause time is set to %i\n" $SLEEPTIME
 PATH_RES=${args[$(($nargs-1))]}
 mkdir -p $PATH_RES
 printf "The folder to collect result files: %s\n" $PATH_RES
-printf "\nFinished reading the input arguments\n"#}}}
+printf "\nFinished reading the input arguments\n" #}}}
 
 # CONNECT TO REMOTES, SCP FILES, LAUNCH REMOTE BASH#{{{
 # ================
@@ -138,14 +138,14 @@ for IPA in ${IPADDRS[@]}; do
 	ssh $LOGIN@$IPA "rm -f $PATH_REM/*" # clear the working directory from any previous data
 	scp $PATH_CURR$REM_BASH $LOGIN@$IPA:$PATH_REM
 	scp $PATH_FUN$REM_FUN.m $LOGIN@$IPA:$PATH_REM
-  if [ CACHE_FL -eq 1 ]; then # copy dat files, if any
+  if [ $CACHE_FL -eq 1 ]; then # copy dat files, if any
     scp -c arcfour $PATH_CACHE${CFILES[$i]} $LOGIN@$IPA:$PATH_REM
   fi
 	scp -c arcfour $PATH_VARS${IFILES[$i]} $LOGIN@$IPA:$PATH_REM
 
 	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PATH_REM; chmod u+x $REM_BASH; nohup ./$REM_BASH $REM_FUN ${IFILES[$i]} ${CFILES[$i]} > $VARS.out 2> $VARS.err < /dev/null &'"
 	i=$((i+1))
-done#}}}
+done #}}}
 
 # WAIT LOOP FOR MATLAB FUNCTION ON REMOTE TO TERMINATE#{{{
 # ================
@@ -187,9 +187,9 @@ while [[ $tot -eq 0 ]]; do
 		fi
 		i=$(($i+1))
 	done
-done#}}}
+done #}}}
 
-# SCP FROM REMOTES TO LOCAL THE RESULT DATA#{{{#{{{
+# SCP FROM REMOTES TO LOCAL THE RESULT DATA #{{{
 # ================
 
 printf "\nCopying the result files\n"
@@ -205,6 +205,6 @@ for IPA in ${IPADDRS[@]}; do
 	i=$(($i+1))
 done
 
-#kill $SSH_AGENT_PID#}}}#}}}
+#kill $SSH_AGENT_PID #}}}
 
 printf "\nBash script terminated\n"

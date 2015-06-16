@@ -1,4 +1,4 @@
-function count = mandel_kernel( fname, resfname )
+function count = mandel_kernel( fname, resfname, ~ )
 %UNTITLED5 Summary of this function goes here
 %   Detailed explanation goes here
 fprintf('The data file provided: %s\n', fname);
