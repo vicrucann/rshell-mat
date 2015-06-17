@@ -65,7 +65,7 @@ classdef Distributor < handle
             [pathsrc, remmat, ~] = fileparts(filestruct.file);
             pathsrc = correctpath(pathsrc);
             
-            system(['chmod u+x ' obj.bashscript])
+            system(['chmod u+x ' obj.bashscript]);
             if obj.printout
                 cmdStr = [obj.bashscript ' ' obj.login ' ' obj.path_rem ' ' obj.ipaddrs ' '...
                     pathsrc ' ' remmat ' ' obj.path_vars ' ' obj.vars ' ' obj.path_cache ' ' obj.cache ' ' ...
@@ -73,11 +73,11 @@ classdef Distributor < handle
             else
                 cmdStr = [obj.bashscript ' ' obj.login ' ' obj.path_rem ' ' obj.ipaddrs ' '...
                     pathsrc ' ' remmat ' ' obj.path_vars ' ' obj.vars ' ' obj.path_cache ' ' obj.cache ' ' ...
-                    obj.path_curr ' ' int2str(obj.sleeptime) ' ' obj.path_res '>' obj.remmat '.log 2>&1'];
+                    obj.path_curr ' ' int2str(obj.sleeptime) ' ' obj.path_res '>' remmat '.log 2>&1'];
             end
             % perform the command
             fprintf('Launching the bash scripts\n');
-            system(cmdStr)
+            system(cmdStr);
             
             % merge data
             fprintf('Merging data...');
