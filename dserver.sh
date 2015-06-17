@@ -33,7 +33,7 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-if [ $CFILE -ne 0 ]; then
+if [ "$CFILE" != "0" ]; then
   # check file exists
   test -e $CFILE
   if [ $? -ne 0 ]; then
@@ -45,18 +45,18 @@ fi
 printf "\nRemote matlab script name: %s\n" $REMMAT
 printf "Input file name: %s\n" $IFILE
 printf "Cache file (0 if nonoe): %s\n" $CFILE
-printf "Result save name: %s\n\n" $RESFILE#}}}
+printf "Result save name: %s\n\n" $RESFILE #}}}
 
 #{{{# LAUNCH THE MATLAB FUNCTION
 # ================
 
 #printf "\nRunning matlab script\n"
 matlab -nodisplay -nojvm -nosplash -nodesktop -wait -r "$REMMAT('$IFILE','$RESFILE','$CFILE');quit();"
-#printf "\nMatlab work done\n"#}}}
+#printf "\nMatlab work done\n" #}}}
 
 #{{{# INDICATE MATLAB HAD FINISHED CALCULATIONS
 # ================
 
 > dserver.dn
-#printf "\nresult.dn file generated\n"#}}}
+#printf "\nresult.dn file generated\n" #}}}
 
