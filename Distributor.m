@@ -41,7 +41,7 @@ classdef Distributor < handle
             obj.path_curr=path_curr;
             obj.sleeptime=sleeptime;
             obj.path_res=path_res;
-            obj.bashscript = fullfile(pwd,'dhead.sh');
+            obj.bashscript = [path_curr 'dhead.sh']; % can be initialized from launch() to avoid passing path_curr
             obj.printout = printout;
             [obj.ncluster, ~] = find(ipaddrs==' '); % to break data into n clusters (as many as given servers)
             obj.ncluster = size(obj.ncluster,2)+1;
