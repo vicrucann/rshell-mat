@@ -8,27 +8,27 @@
 
 # ARGUMENTS PARSING
 # ================
-# input arguments form (must be at least 7 args):
-#   n_ipaddrs, login, remote_destination, n_cachef, path_cache, cache_var, {ipaddrs}
+# input arguments form (must be at least 6 args):
+#   login, remote_destination, n_cachef, path_cache, cache_var, {ipaddrs}
 #   The .dat files have the format: `path_cache/cache_var{i}.dat` for i=[1..n_cachef*n_ipaddrs]
 #   `n_cachef` stands for number of files to transfer per one remote
 
 args=("$@")
 printf "\nNumber of arguments passed: %d\n" $#
 nargs=$#
-if [ $nargs -lt 7 ]; then
-	echo "ERROR: Number of passed arguments is smaller than required minimum (7)"
+if [ $nargs -lt 6 ]; then
+	echo "ERROR: Number of passed arguments is smaller than required minimum (6)"
 	exit 1
 fi
-nservs=${args[0]}
+nservs=$((nargs-5))
 printf "Number of servers: %d\n" $nservs
 
-LOGIN=${args[1]}
+LOGIN=${args[0]}
 printf "The login parameter: %s\n" $LOGIN
-PATH_REM=${args[2]}
+PATH_REM=${args[1]}
 printf "The remote working directory: %s\n" $PATH_REM
 
-ncache=${args[3]}
+ncache=${args[2]}
 printf "Number of .dat file to copy for EACH remote: %d\n" $ncache
 nfiles=$(($nservs*$ncache))
 printf "Total number of .dat files: %d\n" $nfiles
@@ -37,7 +37,7 @@ if [ $rem_check -ne 0 ]; then
   printf "ERROR: number of files to transfer must be the same for all the remotes\n"
   exit 1
 fi
-PATH_CACHE=${args[4]}
+PATH_CACHE=${args[3]}
 CACHE=${args[5]}
 
 i=6

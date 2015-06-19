@@ -83,18 +83,18 @@ classdef Distributor < handle
         function status = scp_cached_data(obj, cnda)
             cache = cnda.window.vname; 
             path_cache = cnda.window.cpath; 
-            ncache = cnda.nchunks / d.ncluster;
+            ncache = cnda.nchunks / obj.ncluster;
 
             transfer = [obj.path_curr 'dtransfer.sh'];
             system(['chmod u+x ' transfer]);
             
-            cmdStr = [transfer ' ' obj.ncluster ' ' obj.login ' ' obj.path_rem ' ' ...
+            cmdStr = [transfer ' ' obj.login ' ' obj.path_rem ' ' ...
                     ncache ' ' path_cache ' ' cache ' ' obj.ipaddrs];
             if ~obj.printout
                 cmdStr = [cmdStr '>' obj.path_res 'transfer.log 2>&1'];
             end
             if (obj.printout)
-                fprtinf('Lauching .dat transfer script\n');
+                fprintf('Lauching .dat transfer script\n');
             end
             status = system(cmdStr);
         end
