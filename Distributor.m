@@ -4,7 +4,6 @@ classdef Distributor < handle
     %   merging and wrapping (kernel), each in a separate file.
     
     properties (GetAccess = 'public', SetAccess = 'private')
-        bashscript;
         printout;
         ncluster;
         login;
@@ -15,74 +14,89 @@ classdef Distributor < handle
         path_curr;
         sleeptime;
         path_res;
-        path_cache;
-        cache;
+        
     end
     
     methods
         % ctor
-        function obj = Distributor(login, path_rem, ipaddrs, path_vars, vars, ...
-                path_cache, cache, path_curr, sleeptime, path_res, printout)
-            if (sum(path_cache == 0) || sum(cache == 0))
-                path_cache = '0';
-                cache = '0';
-            end
+        function obj = Distributor(login, path_rem, ipaddrs, path_vars, vars, path_curr, sleeptime, path_res, printout)
             path_rem = correctpath(path_rem);
             path_vars = correctpath(path_vars);
-            path_curr = correctpath(path_curr);
             path_res = correctpath(path_res);
+            path_curr = correctpath(path_curr);
             obj.login=login;
             obj.path_rem=path_rem;
             obj.ipaddrs=ipaddrs;
             obj.path_vars=path_vars;
             obj.vars=vars;
-            obj.path_cache=path_cache;
-            obj.cache=cache;
             obj.path_curr=path_curr;
             obj.sleeptime=sleeptime;
             obj.path_res=path_res;
-            obj.bashscript = [path_curr 'dhead.sh']; % can be initialized from launch() to avoid passing path_curr
             obj.printout = printout;
             [obj.ncluster, ~] = find(ipaddrs==' '); % to break data into n clusters (as many as given servers)
             obj.ncluster = size(obj.ncluster,2)+1;
-            % check if servers are reacheable
-            tester = [path_curr 'dtest.sh']; % can be moved to separate func which is called from launch()
+            obj.test_connection();
+        end
+        
+        function test_connection(obj)
+            tester = [obj.path_curr 'dtest.sh']; 
             system(['chmod u+x ' tester]);
-            cmdStr=[tester ' ' login ' ' ipaddrs];
-            system(cmdStr);
-            fprintf('Distributor initialized successfully\n');
+            cmdStr=[tester ' ' obj.login ' ' obj.ipaddrs];
+            status = system(cmdStr);
+            if (status==0)
+                fprintf('Distributor initialized successfully\n');
+            else
+                error('Could not initialize distributor - check SSH connection/settings');
+            end
         end
         
         % launching framework: split, distribute, merge
         function out_merge = launch(obj, h_split, in_split, h_kernel, h_merge, in_merge)   
             % split data
-            fprintf('Splitting the data...');
-            out_split = h_split(in_split);
-            fprintf('done\n');
+            if (obj.printout); fprintf('Splitting the data...'); end
+            h_split(in_split);
+            if obj.printout; fprintf('done\n'); end
             
             % remmat initialization
             filestruct = functions(h_kernel);
             [pathsrc, remmat, ~] = fileparts(filestruct.file);
             pathsrc = correctpath(pathsrc);
             
-            system(['chmod u+x ' obj.bashscript]);
-            if obj.printout
-                cmdStr = [obj.bashscript ' ' obj.login ' ' obj.path_rem ' ' obj.ipaddrs ' '...
-                    pathsrc ' ' remmat ' ' obj.path_vars ' ' obj.vars ' ' obj.path_cache ' ' obj.cache ' ' ...
-                    obj.path_curr ' ' int2str(obj.sleeptime) ' ' obj.path_res];
-            else
-                cmdStr = [obj.bashscript ' ' obj.login ' ' obj.path_rem ' ' obj.ipaddrs ' '...
-                    pathsrc ' ' remmat ' ' obj.path_vars ' ' obj.vars ' ' obj.path_cache ' ' obj.cache ' ' ...
-                    obj.path_curr ' ' int2str(obj.sleeptime) ' ' obj.path_res '>' remmat '.log 2>&1'];
+            bashscript = [obj.path_curr 'dhead.sh'];
+            system(['chmod u+x ' bashscript]);
+            cmdStr = [bashscript ' ' obj.login ' ' obj.path_rem ' ' obj.ipaddrs ' '...
+                pathsrc ' ' remmat ' ' obj.path_vars ' ' obj.vars ' ' obj.path_curr ' '...
+                int2str(obj.sleeptime) ' ' obj.path_res];
+            if ~obj.printout
+                cmdStr = [cmdStr '>' obj.path_res remmat '.log 2>&1'];
             end
             % perform the command
-            fprintf('Launching the bash scripts\n');
+            if obj.printout; fprintf('Launching the bash scripts\n'); end
             system(cmdStr);
             
             % merge data
-            fprintf('Merging data...');
+            if obj.printout; fprintf('Merging data...'); end
             out_merge = h_merge(in_merge);
-            fprintf('done\n');
+            if obj.printout; fprintf('done\n'); end
+        end
+        
+        function status = scp_cached_data(obj, cnda)
+            cache = cnda.window.vname; 
+            path_cache = cnda.window.cpath; 
+            ncache = cnda.nchunks / d.ncluster;
+
+            transfer = [obj.path_curr 'dtransfer.sh'];
+            system(['chmod u+x ' transfer]);
+            
+            cmdStr = [transfer ' ' obj.ncluster ' ' obj.login ' ' obj.path_rem ' ' ...
+                    ncache ' ' path_cache ' ' cache ' ' obj.ipaddrs];
+            if ~obj.printout
+                cmdStr = [cmdStr '>' obj.path_res 'transfer.log 2>&1'];
+            end
+            if (obj.printout)
+                fprtinf('Lauching .dat transfer script\n');
+            end
+            status = system(cmdStr);
         end
     end
 

@@ -13,17 +13,14 @@
 #printf "The n input arguments for dhead.sh script are: \n"
 #printf "[0] LOGIN : login id to the remote servers (assumed it's the same login for every server)\n"
 #printf "[1]- PATH_REM : temporal working directory (will be created if does not exist) on the remote servers; assumed to be the same for each server \n"
-#printf "[2..n-10]- IPADDRS : range of ip-addresses of all the servers, assumed they have the same login/psw account \n"
-#printf "[n-9]- PATH_FUN : path name where REM_FUN function is located \n"
-#printf "[n-8]- REM_FUN : name of the matlab function (e.g. 'myfunc') that will be copied and launched on remote servers by dserver.sh \n"
-#printf "[n-7]- PATH_VARS : path name where VARS data will be saved to and loaded from \n"
-#printf "[n-6]- VARS : name of the workspace varialbes file (without numeration and .mat); these are the variables to copy and load to matlab memory on the remote servers \n"
-#printf "[n-5]- PATH_CACHE : path name where CACHE data is stored, if any (0 if none) \n"
-#printf "[n-4]- CACHE : root name for data variable which is stored on disk, not a workspace variable (0 if none) \n"
+#printf "[2..n-8]- IPADDRS : range of ip-addresses of all the servers, assumed they have the same login/psw account \n"
+#printf "[n-7]- PATH_FUN : path name where REM_FUN function is located \n"
+#printf "[n-6]- REM_FUN : name of the matlab function (e.g. 'myfunc') that will be copied and launched on remote servers by dserver.sh \n"
+#printf "[n-5]- PATH_VARS : path name where VARS data will be saved to and loaded from \n"
+#printf "[n-4]- VARS : name of the workspace varialbes file (without numeration and .mat); these are the variables to copy and load to matlab memory on the remote servers \n"
 #printf "[n-3]- PATH_CURR : path name where .sh scripts are located, literally, it is a full path to the current folder \n"
 #printf "[n-2]- SLEEPTIME : integer that indicates number of seconds to pause when waiting for each remote server to complete their computations \n"
 #printf "[n-1] - PATH_RES : name of the local folder where the results will be copied to from the servers \n"#}}}
-
 
 # ARGUMENTS PARSING#{{{
 # ================
@@ -31,11 +28,11 @@
 args=("$@")
 printf "\nNumber of arguments passed: %d\n" $#
 nargs=$#
-if [ $nargs -lt 12 ]; then
+if [ $nargs -lt 10 ]; then
 	echo "ERROR: Number of passed arguments is smaller than required minimum (10)"
 	exit 1
 fi
-nservs=$((nargs-11))
+nservs=$((nargs-9))
 printf "Number of servers: %d\n" $nservs
 
 LOGIN=${args[0]}
@@ -54,9 +51,9 @@ done
 printf "\nIP addresses extracted:\n"
 echo ${IPADDRS[@]}
 
-PATH_FUN=${args[$nargs-9]}
+PATH_FUN=${args[$nargs-7]}
 
-REM_FUN=${args[$nargs-8]} # check file existance
+REM_FUN=${args[$nargs-6]} # check file existance
 test -e $PATH_FUN$REM_FUN.m
 if [ $? -ne 0 ]; then
 	printf "ERROR: no such file: %s\n" $PATH_FUN$REM_FUN.m
@@ -64,8 +61,8 @@ if [ $? -ne 0 ]; then
 fi
 printf "Matlab script file for remote: %s\n" $PATH_FUN$REM_FUN.m
 
-PATH_VARS=${args[$(($nargs-7))]}
-VARS=${args[$(($nargs-6))]} # check file existance
+PATH_VARS=${args[$(($nargs-5))]}
+VARS=${args[$(($nargs-4))]} # check file existance
 j=1
 i=0
 for IPA in ${IPADDRS[@]}; do
@@ -82,34 +79,7 @@ done
 printf "\nVariables-to-load extracted:\n"
 echo $PATH_VARS${IFILES[@]}
 
-PATH_CACHE=${args[$(($nargs-5))]}
-CACHE=${args[$(($nargs-4))]} # check file existance
-j=1
-i=0
-if [ $PATH_CACHE -eq 0 ]; then
-  CACHE_FL=0
-  for IPA in ${IPADDRS[@]}; do
-    CFILES[$i]=0
-    i=$((i+1))
-  done
-else
-  for IPA in ${IPADDRS[@]}; do
-	  test -e $PATH_CACHE$CACHE$j.dat
-	  if [ $? -ne 0 ]; then
-		  printf "ERROR: no such file: %s\n" $PATH_CACHE$CACHE$j.dat
-		  exit 1
-	  fi
-	  CFILES[$i]="$CACHE$j.dat"
-	  j=$((j+1))
-	  i=$((i+1))
-  done
-  CACHE_FL=1
-fi
-printf "\nVariables-to-load extracted:\n"
-echo $PATH_CACHE${CFILES[@]}
-
 PATH_CURR=${args[$(($nargs-3))]}
-
 REM_BASH="dserver.sh" # check file existance
 test -e $PATH_CURR$REM_BASH
 if [ $? -ne 0 ]; then
@@ -138,12 +108,9 @@ for IPA in ${IPADDRS[@]}; do
 	ssh $LOGIN@$IPA "rm -f $PATH_REM/*" # clear the working directory from any previous data
 	scp $PATH_CURR$REM_BASH $LOGIN@$IPA:$PATH_REM
 	scp $PATH_FUN$REM_FUN.m $LOGIN@$IPA:$PATH_REM
-  if [ $CACHE_FL -eq 1 ]; then # copy dat files, if any
-    scp -c arcfour $PATH_CACHE${CFILES[$i]} $LOGIN@$IPA:$PATH_REM
-  fi
 	scp -c arcfour $PATH_VARS${IFILES[$i]} $LOGIN@$IPA:$PATH_REM
 
-	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PATH_REM; chmod u+x $REM_BASH; nohup ./$REM_BASH $REM_FUN ${IFILES[$i]} ${CFILES[$i]} > $VARS.out 2> $VARS.err < /dev/null &'"
+	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PATH_REM; chmod u+x $REM_BASH; nohup ./$REM_BASH $REM_FUN ${IFILES[$i]} > $VARS.out 2> $VARS.err < /dev/null &'"
 	i=$((i+1))
 done #}}}
 
