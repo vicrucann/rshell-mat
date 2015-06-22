@@ -6,7 +6,7 @@
 #   dtransfer.sh - "distributed transfer shell".
 #   2015 Victoria Rudakova, vicrucann@gmail.com
 
-# ARGUMENTS PARSING
+# ARGUMENTS PARSING#{{{
 # ================
 # input arguments form (must be at least 6 args):
 #   login, remote_destination, n_cachef, path_cache, cache_var, {ipaddrs}
@@ -70,9 +70,9 @@ while true; do
   fi
 done
 printf "\nVariables-to-load extracted:\n"
-echo $PATH_CACHE${CFILES[@]}
+echo $PATH_CACHE${CFILES[@]} #}}}
 
-# CONNECT TO REMOTES, SCP FILES
+# CONNECT TO REMOTES, SCP FILES#{{{
 # ================
 
 i=0
@@ -85,6 +85,6 @@ for IPA in ${IPADDRS[@]}; do
     scp -c arcfour $PATH_CACHE${CFILES[$idx]} $LOGIN@$IPA:$PATH_REM
   done
 	i=$((i+1))
-done
+done #}}}
 
 echo "Distributed transfer of .dat files done"
