@@ -76,12 +76,12 @@ echo $PATH_CACHE${CFILES[@]} #}}}
 # ================
 
 i=0
-printf "\nFile transfer and script launching\n"
+printf "\nFile transfer\n"
 for IPA in ${IPADDRS[@]}; do
 	ssh $LOGIN@$IPA "mkdir -p $PATH_REM" # create working directory, if necessary
 	ssh $LOGIN@$IPA "rm -f $PATH_REM/*" # clear the working directory from any previous data
   for (( j = 0; j < $ncache ; j++ )); do
-    idx=$(($j*$ncache+$i+1))
+    idx=$(($i*$ncache+$j))
     scp -c arcfour $PATH_CACHE${CFILES[$idx]} $LOGIN@$IPA:$PATH_REM
   done
 	i=$((i+1))
