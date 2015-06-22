@@ -38,11 +38,12 @@ if [ $rem_check -ne 0 ]; then
   exit 1
 fi
 PATH_CACHE=${args[3]}
-CACHE=${args[5]}
+CACHE=${args[4]}
+printf "The cacned variable has following name format: %s\n" "$PATH_CACHE$CACHE.dat"
 
-i=6
+i=5
 while true; do
-	IPADDRS[$((i-6))]=${args[$i]}
+	IPADDRS[$((i-5))]=${args[$i]}
 	i=$((i+1))
 	nservs=$(($nservs-1))
 	if (( nservs <= 0 )); then

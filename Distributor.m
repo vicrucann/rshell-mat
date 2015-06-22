@@ -80,7 +80,7 @@ classdef Distributor < handle
             if obj.printout; fprintf('done\n'); end
         end
         
-        function status = scp_cached_data(obj, cnda)
+        function status = scp_cached_data(obj, cnda) % where cnda is CachedNDArray data structure
             cache = cnda.window.vname; 
             path_cache = cnda.window.cpath; 
             ncache = cnda.nchunks / obj.ncluster;
@@ -89,7 +89,7 @@ classdef Distributor < handle
             system(['chmod u+x ' transfer]);
             
             cmdStr = [transfer ' ' obj.login ' ' obj.path_rem ' ' ...
-                    ncache ' ' path_cache ' ' cache ' ' obj.ipaddrs];
+                    int2str(ncache) ' ' path_cache ' ' cache ' ' obj.ipaddrs];
             if ~obj.printout
                 cmdStr = [cmdStr '>' obj.path_res 'transfer.log 2>&1'];
             end
