@@ -11,14 +11,16 @@
 
 args=("$@")
 nargs=$#
-if [ $nargs -ne 2 ]; then
-	printf "ERROR: Number of passed parameters must be equal 2\n"
+if [ $nargs -ne 4 ]; then
+	printf "ERROR: Number of passed parameters must be equal 4\n"
 	exit 1
 fi
 
 REMMAT=${args[0]}
 IFILE=${args[1]}
 RESFILE="result_$IFILE"
+CACHE=${args[2]}
+NCACHE=${args[3]}
 
 test -e $REMMAT.m # check file exists
 if [ $? -ne 0 ]; then
@@ -40,7 +42,7 @@ printf "Result save name: %s\n\n" $RESFILE #}}}
 # ================
 
 #printf "\nRunning matlab script\n"
-matlab -nodisplay -nojvm -nosplash -nodesktop -wait -r "$REMMAT('$IFILE','$RESFILE');quit();"
+matlab -nodisplay -nojvm -nosplash -nodesktop -wait -r "$REMMAT('$IFILE','$RESFILE','$CACHE','$NCACHE');quit();"
 #printf "\nMatlab work done\n" #}}}
 
 #{{{# INDICATE MATLAB HAD FINISHED CALCULATIONS

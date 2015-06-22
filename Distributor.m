@@ -14,7 +14,9 @@ classdef Distributor < handle
         path_curr;
         sleeptime;
         path_res;
-        
+        cached=0; % flag if there are any cached variables that were copied
+        ncached=0; % number of those vars
+        cvars=''; % vector of strings that contain names of cached vars, currently supports only 1 var max
     end
     
     methods
@@ -35,7 +37,9 @@ classdef Distributor < handle
             obj.printout = printout;
             [obj.ncluster, ~] = find(ipaddrs==' '); % to break data into n clusters (as many as given servers)
             obj.ncluster = size(obj.ncluster,2)+1;
-            obj.test_connection();
+            if (obj.ncluster > 1)
+                obj.test_connection();
+            end
         end
         
         function test_connection(obj)
@@ -67,6 +71,7 @@ classdef Distributor < handle
             cmdStr = [bashscript ' ' obj.login ' ' obj.path_rem ' ' obj.ipaddrs ' '...
                 pathsrc ' ' remmat ' ' obj.path_vars ' ' obj.vars ' ' obj.path_curr ' '...
                 int2str(obj.sleeptime) ' ' obj.path_res];
+            cmdStr = [cmdStr ' ' obj.cvars ' ' obj.ncached]; % add cache params
             if ~obj.printout
                 cmdStr = [cmdStr '>' obj.path_res remmat '.log 2>&1'];
             end
@@ -81,8 +86,15 @@ classdef Distributor < handle
         end
         
         function status = scp_cached_data(obj, cnda) % where cnda is CachedNDArray data structure
-            cache = cnda.window.vname; 
-            path_cache = cnda.window.cpath; 
+            assert(obj.cached == 0, 'Current version supports only 1 cached varaible data transfer');
+            
+            cache = cnda.window.vname; % variable name
+            path_cache = cnda.window.cpath; % its path
+            
+            obj.cached = 1; % indicate cached object was already copied
+            %obj.ncached = obj.ncached+1; % commented since it's only 1 object allowed
+            obj.cvars = cache;gt
+             
             ncache = cnda.nchunks / obj.ncluster;
 
             transfer = [obj.path_curr 'dtransfer.sh'];
