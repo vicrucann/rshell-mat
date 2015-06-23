@@ -32,11 +32,11 @@ ncache=${args[2]}
 printf "Number of .dat file to copy for EACH remote: %d\n" $ncache
 nfiles=$(($nservs*$ncache))
 printf "Total number of .dat files: %d\n" $nfiles
-rem_check=$(($nservs%$ncache)) # make sure the remainder is 0
-if [ $rem_check -ne 0 ]; then
-  printf "ERROR: number of files to transfer must be the same for all the remotes\n"
-  exit 1
-fi
+#rem_check=$(($nservs%$ncache)) # make sure the remainder is 0
+#if [ $rem_check -ne 0 ]; then
+#  printf "ERROR: number of files to transfer must be the same for all the remotes\n"
+#  exit 1
+#fi
 PATH_CACHE=${args[3]}
 CACHE=${args[4]}
 printf "The cacned variable has following name format: %s\n" "$PATH_CACHE$CACHE.dat"
