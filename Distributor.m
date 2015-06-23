@@ -15,8 +15,8 @@ classdef Distributor < handle
         sleeptime;
         path_res;
         cached=0; % flag if there are any cached variables that were copied
-        ncached=0; % number of those vars
-        cvars=''; % vector of strings that contain names of cached vars, currently supports only 1 var max
+        ncache=0; % number of those vars
+        cvars='empty'; % vector of strings that contain names of cached vars, currently supports only 1 var max
     end
     
     methods
@@ -71,7 +71,7 @@ classdef Distributor < handle
             cmdStr = [bashscript ' ' obj.login ' ' obj.path_rem ' ' obj.ipaddrs ' '...
                 pathsrc ' ' remmat ' ' obj.path_vars ' ' obj.vars ' ' obj.path_curr ' '...
                 int2str(obj.sleeptime) ' ' obj.path_res];
-            cmdStr = [cmdStr ' ' obj.cvars ' ' obj.ncached]; % add cache params
+            cmdStr = [cmdStr ' ' obj.cvars ' ' int2str(obj.ncache)]; % add cache params
             if ~obj.printout
                 cmdStr = [cmdStr '>' obj.path_res remmat '.log 2>&1'];
             end
@@ -91,17 +91,17 @@ classdef Distributor < handle
             cache = cnda.window.vname; % variable name
             path_cache = cnda.window.cpath; % its path
             
+            nc = cnda.nchunks / obj.ncluster;
+            
             obj.cached = 1; % indicate cached object was already copied
-            %obj.ncached = obj.ncached+1; % commented since it's only 1 object allowed
-            obj.cvars = cache;gt
+            obj.ncache = nc; 
+            obj.cvars = cache;
              
-            ncache = cnda.nchunks / obj.ncluster;
-
             transfer = [obj.path_curr 'dtransfer.sh'];
             system(['chmod u+x ' transfer]);
             
             cmdStr = [transfer ' ' obj.login ' ' obj.path_rem ' ' ...
-                    int2str(ncache) ' ' path_cache ' ' cache ' ' obj.ipaddrs];
+                    int2str(obj.ncache) ' ' path_cache ' ' cache ' ' obj.ipaddrs];
             if ~obj.printout
                 cmdStr = [cmdStr '>' obj.path_res 'transfer.log 2>&1'];
             end

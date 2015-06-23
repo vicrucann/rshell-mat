@@ -20,7 +20,10 @@
 #printf "[n-4]- VARS : name of the workspace varialbes file (without numeration and .mat); these are the variables to copy and load to matlab memory on the remote servers \n"
 #printf "[n-3]- PATH_CURR : path name where .sh scripts are located, literally, it is a full path to the current folder \n"
 #printf "[n-2]- SLEEPTIME : integer that indicates number of seconds to pause when waiting for each remote server to complete their computations \n"
-#printf "[n-1] - PATH_RES : name of the local folder where the results will be copied to from the servers \n"#}}}
+#printf "[n-1] - PATH_RES : name of the local folder where the results will be copied to from the servers \n"
+#printf "[n-2] - CVARS : rootname of the cached (kept on disk, .dat files) variable file that was copied in advance to the remotes \n"
+#printf "[n-1] - NCVARS : number of cached files copied to each remote \n"
+#}}}
 
 # ARGUMENTS PARSING#{{{
 # ================
@@ -28,11 +31,11 @@
 args=("$@")
 printf "\nNumber of arguments passed: %d\n" $#
 nargs=$#
-if [ $nargs -lt 10 ]; then
-	echo "ERROR: Number of passed arguments is smaller than required minimum (10)"
+if [ $nargs -lt 12 ]; then
+	echo "ERROR: Number of passed arguments is smaller than required minimum (12)"
 	exit 1
 fi
-nservs=$((nargs-9))
+nservs=$((nargs-11))
 printf "Number of servers: %d\n" $nservs
 
 LOGIN=${args[0]}
@@ -51,9 +54,9 @@ done
 printf "\nIP addresses extracted:\n"
 echo ${IPADDRS[@]}
 
-PATH_FUN=${args[$nargs-7]}
+PATH_FUN=${args[$nargs-9]}
 
-REM_FUN=${args[$nargs-6]} # check file existance
+REM_FUN=${args[$nargs-8]} # check file existance
 test -e $PATH_FUN$REM_FUN.m
 if [ $? -ne 0 ]; then
 	printf "ERROR: no such file: %s\n" $PATH_FUN$REM_FUN.m
@@ -61,8 +64,8 @@ if [ $? -ne 0 ]; then
 fi
 printf "Matlab script file for remote: %s\n" $PATH_FUN$REM_FUN.m
 
-PATH_VARS=${args[$(($nargs-5))]}
-VARS=${args[$(($nargs-4))]} # check file existance
+PATH_VARS=${args[$(($nargs-7))]}
+VARS=${args[$(($nargs-6))]} # check file existance
 j=1
 i=0
 for IPA in ${IPADDRS[@]}; do
@@ -79,7 +82,7 @@ done
 printf "\nVariables-to-load extracted:\n"
 echo $PATH_VARS${IFILES[@]}
 
-PATH_CURR=${args[$(($nargs-3))]}
+PATH_CURR=${args[$(($nargs-5))]}
 REM_BASH="dserver.sh" # check file existance
 test -e $PATH_CURR$REM_BASH
 if [ $? -ne 0 ]; then
@@ -88,13 +91,16 @@ if [ $? -ne 0 ]; then
 fi
 printf "Remote bash script: %s\n" $PATH_CURR$REM_BASH
 
-SLEEPTIME=${args[$(($nargs-2))]}
+SLEEPTIME=${args[$(($nargs-4))]}
 printf "Pause time is set to %i\n" $SLEEPTIME
 
-PATH_RES=${args[$(($nargs-1))]}
+PATH_RES=${args[$(($nargs-3))]}
 mkdir -p $PATH_RES
 printf "The folder to collect result files: %s\n" $PATH_RES
 printf "\nFinished reading the input arguments\n" #}}}
+
+CVARS=${args[$(($nargs-2))]}
+NCVARS=${args[$(($nargs-1))]}
 
 # CONNECT TO REMOTES, SCP FILES, LAUNCH REMOTE BASH#{{{
 # ================
@@ -105,12 +111,15 @@ i=0
 printf "\nFile transfer and script launching\n"
 for IPA in ${IPADDRS[@]}; do
 	ssh $LOGIN@$IPA "mkdir -p $PATH_REM" # create working directory, if necessary
-	ssh $LOGIN@$IPA "rm -f $PATH_REM/*" # clear the working directory from any previous data
+	ssh $LOGIN@$IPA "rm -f $PATH_REM/*.mat" # clear the working directory from any previous data
+	ssh $LOGIN@$IPA "rm -f $PATH_REM/*.out" # clear the working directory from any previous data
+	ssh $LOGIN@$IPA "rm -f $PATH_REM/*.err" # clear the working directory from any previous data
+	ssh $LOGIN@$IPA "rm -f $PATH_REM/*.dn" # clear the working directory from any previous data
 	scp $PATH_CURR$REM_BASH $LOGIN@$IPA:$PATH_REM
 	scp $PATH_FUN$REM_FUN.m $LOGIN@$IPA:$PATH_REM
 	scp -c arcfour $PATH_VARS${IFILES[$i]} $LOGIN@$IPA:$PATH_REM
 
-	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PATH_REM; chmod u+x $REM_BASH; nohup ./$REM_BASH $REM_FUN ${IFILES[$i]} > $VARS.out 2> $VARS.err < /dev/null &'"
+	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PATH_REM; chmod u+x $REM_BASH; nohup ./$REM_BASH $REM_FUN ${IFILES[$i]} $CVARS $NCVARS  > $VARS.out 2> $VARS.err < /dev/null &'"
 	i=$((i+1))
 done #}}}
 
@@ -118,7 +127,7 @@ done #}}}
 # ================
 
 printf "\nWaiting for Matlab scripts to terminate\n"
-TLIMIT=50
+TLIMIT=1000 # max wait time = TLIMIT * SLEEPTIME
 count=0
 tot=0
 while [[ $tot -eq 0 ]]; do
