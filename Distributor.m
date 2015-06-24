@@ -77,7 +77,11 @@ classdef Distributor < handle
             end
             % perform the command
             if obj.printout; fprintf('Launching the bash scripts\n'); end
-            system(cmdStr);
+            status = system(cmdStr);
+            
+            if (status~=0)
+                error('Distributor return status : check output files .out and .err for status');
+            end
             
             % merge data
             if obj.printout; fprintf('Merging data...'); end
