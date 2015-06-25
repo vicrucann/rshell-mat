@@ -1,6 +1,6 @@
 ## Short description
 
-*rshell-mat* is bash script based project that helps to ease heavy data processing in Matlab. Its main idea is to send the split big data to several remote servers and run the most heavy computations simultaneously using those remotes. When the processing is done, the split result files are copied back to the local machine, merged by using the user-provided function; so the data can be used further in matlab. The processing is done by two main bash scripts and a matlab class:  
+*rshell-mat* is bash script based project that helps to ease heavy data processing in Matlab. Its main idea is to send the split big data to several remote servers and run the most heavy computations simultaneously using those remotes. When the processing is done, the split result files are copied back to the local machine, merged by using the user-provided function; so the data can be used further in Matlab. The processing is done by two main bash scripts and a Matlab class:  
 * *dhead.sh* - a local head script that performs the distribution among the remote servers and also copying all the files forward and back  
 * *dserver.sh* - a remote server script that launches matlab function on the remote server  
 * *Distrubutor.m* - is a handle Matlab interface, that coordinates data initialization, splitting, script launching and merging. Note, the split, kernel and merge functions must be provided by user, as well as initialized structures for each method.  
@@ -36,7 +36,7 @@ Use the following steps to run your `Distributor`:
 *Distributor* variable declaration by running a constructor (see what are the input parameters in [parameter list](https://github.com/vicrucann/rshell-mat/tree/auto#list-of-parameters))  
 ```
 d = Distributor(login, path_rem, ipaddrs, path_vars, vars, ...
-    path_cache, cache, path_curr, sleeptime, path_res, printout);
+    path_curr, sleeptime, path_res, printout);
 ```   
 Obtain function handles on your `split`, `kernel` and `merge` functions, as well as initialize the input structures for each of these functions (see [function signatures design](https://github.com/vicrucann/rshell-mat/tree/auto#providing-your-custom-functions-for-split-merge-and-wrapping-kernel)):  
 ```
@@ -57,7 +57,7 @@ val2 = out_merge.field2;
 ...
 ```
 
-## List of parameters  
+#### List of parameters  
 
 `login` is a login id for the remotes (assumed the same for all the remotes), in a string format, e.g.: `login = 'remote_user';`.   
 
@@ -69,10 +69,6 @@ val2 = out_merge.field2;
 
 `vars` is a root name of temporal files where the work variables are saved to, in a string format.   
 
-`path_cache` is a folder name where the `cache` data (data on disk) is stored.  
-
-`cache` - is a root name of `.dat` files, if any present.  
-
 `path_curr` is a folder path where the .sh scripts are located, for the Mandelbrot example case it is a full path to the current folder.  
 
 `sleeptime` is a pause interval in seconds, integer, it is used inside *dhead.sh* to wait until the tasks are finished on remotes; you may want to increase it for heavy data computations.    
@@ -81,18 +77,18 @@ val2 = out_merge.field2;
 
 `printout` is a boolean (`0` or `1`) variable that allows (`1`) or suppresses (`0`) any `printf` output to the Matlab command line. Note that for big repetitive data computations it is adviced to turn it off for faster processing time.  
 
-## Providing your custom functions for split, merge and wrapping (kernel)  
+#### Providing your custom functions for split, merge and wrapping (kernel)  
 
 These are the signatures of three functions that user must provide for their *Distributor*:  
-* `function out = split(input)`  
-* `function out = kernel(file_mat, res_fname, file_dat)`  
-* `function out = merge(input)`  
+* `function output = split(input)`  
+* `function output = kernel(file_mat, res_fname, cache_vname, ncache)` or cache parameters could be omitted: `kernel(file_mat, res_fname, ~, ~)` if you do not use any supplemental `.dat` files in computations  
+* `function output = merge(input)`  
 
-The `split` and `merge` functions have their own `input` and `out` variables which are a Matlab `struct` data types that contain the necessary variables as fields.  
+The `split` and `merge` functions have their own `input` and `output` variables which are a Matlab `struct` data types that contain the necessary variables as fields.  
 
-The `kernel` function have three variables as input: `file_mat` is a `.mat` filename where Matlab workspace variables are kept; `res_fname` is a filename where the result will be written to for the current remote (string format); and `file_dat` is a `.dat` filename where Matlab cache variable is stored (could be left to `0` if none is used). 
+The `kernel` function have two or four variables as input: `file_mat` is a `.mat` filename where Matlab workspace variables are kept; `res_fname` is a filename where the result will be written to for the current remote (string format); and `cache_vname` together with `ncache` are for indication a rootname of `.dat` file where Matlab cache variable is stored and the number of such files (these parameters might be ommited). 
 
-The necessity to have `file_dat` might not be obvious, but we use **rshell-mat** in conjunction with [CachedNDArray](https://github.com/vicrucann/cacharr) data structure for our [cryo3D](https://github.com/vicrucann/cryo3d) project (see [Notes](https://github.com/vicrucann/rshell-mat/tree/auto#notes) for more details), for that reason we figured out that not all the data can be stored and transferred as `.mat` file, but in case if there is any other disk data, it could be transferred and used as a `.dat` file.  
+The necessity to have `.dat` files might not be obvious, but we use **rshell-mat** in conjunction with [CachedNDArray](https://github.com/vicrucann/cacharr) data structure for our [cryo3D](https://github.com/vicrucann/cryo3d) project (see [Notes](https://github.com/vicrucann/rshell-mat/tree/auto#notes) for more details), for that reason we figured out that not all the data can be stored and transferred as `.mat` file, but in case if there is any other disk data, it could be transferred and used as a `.dat` file.  
 
 ## Notes  
 

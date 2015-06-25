@@ -73,7 +73,7 @@ classdef Distributor < handle
                 int2str(obj.sleeptime) ' ' obj.path_res];
             cmdStr = [cmdStr ' ' obj.cvars ' ' int2str(obj.ncache)]; % add cache params
             if ~obj.printout
-                cmdStr = [cmdStr '>' obj.path_res remmat '.log 2>&1'];
+                cmdStr = [cmdStr ' >' obj.path_res remmat '.log 2>&1'];
             end
             % perform the command
             if obj.printout; fprintf('Launching the bash scripts\n'); end
