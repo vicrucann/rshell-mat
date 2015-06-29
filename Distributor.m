@@ -38,6 +38,7 @@ classdef Distributor < handle
             [obj.ncluster, ~] = find(ipaddrs==' '); % to break data into n clusters (as many as given servers)
             obj.ncluster = size(obj.ncluster,2)+1;
             if (obj.ncluster > 1)
+                mkdir(obj.path_res);
                 obj.test_connection();
             end
         end
@@ -46,6 +47,9 @@ classdef Distributor < handle
             tester = [obj.path_curr 'dtest.sh']; 
             system(['chmod u+x ' tester]);
             cmdStr=[tester ' ' obj.login ' ' obj.ipaddrs];
+            if ~obj.printout
+               cmdStr = [cmdStr ' >' obj.path_res 'tester.log 2>&1']; 
+            end
             status = system(cmdStr);
             if (status==0)
                 fprintf('Distributor initialized successfully\n');
@@ -79,9 +83,9 @@ classdef Distributor < handle
             if obj.printout; fprintf('Launching the bash scripts\n'); end
             status = system(cmdStr);
             
-            if (status~=0)
-                error('Distributor return status : check output files .out and .err for status');
-            end
+            %if (status~=0)
+            %    error('Distributor return status : check output files .out and .err for status');
+            %end
             
             % merge data
             if obj.printout; fprintf('Merging data...'); end
@@ -107,7 +111,7 @@ classdef Distributor < handle
             cmdStr = [transfer ' ' obj.login ' ' obj.path_rem ' ' ...
                     int2str(obj.ncache) ' ' path_cache ' ' cache ' ' obj.ipaddrs];
             if ~obj.printout
-                cmdStr = [cmdStr '>' obj.path_res 'transfer.log 2>&1'];
+                cmdStr = [cmdStr ' >' obj.path_res 'transfer.log 2>&1'];
             end
             if (obj.printout)
                 fprintf('Lauching .dat transfer script\n');

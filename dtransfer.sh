@@ -83,6 +83,7 @@ for IPA in ${IPADDRS[@]}; do
   for (( j = 0; j < $ncache ; j++ )); do
     idx=$(($i*$ncache+$j))
     scp -c arcfour $PATH_CACHE${CFILES[$idx]} $LOGIN@$IPA:$PATH_REM
+    printf "scp returned %i\n" $?
   done
 	i=$((i+1))
 done #}}}
