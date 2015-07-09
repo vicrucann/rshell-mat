@@ -44,6 +44,9 @@ classdef Distributor < handle
         end
         
         function test_connection(obj)
+            if (obj.printout);
+                tic;
+            end
             tester = [obj.path_curr 'dtest.sh']; 
             system(['chmod u+x ' tester]);
             cmdStr=[tester ' ' obj.login ' ' obj.ipaddrs];
@@ -56,15 +59,28 @@ classdef Distributor < handle
             else
                 error('Could not initialize distributor - check SSH connection/settings');
             end
+            if (obj.printout);
+                toc;
+            end
         end
         
         % launching framework: split, distribute, merge
         function out_merge = launch(obj, h_split, in_split, h_kernel, h_merge, in_merge)   
             % split data
-            if (obj.printout); fprintf('Splitting the data...'); end
+            if (obj.printout); 
+                t_split = tic; 
+                fprintf('Splitting the data...'); 
+            end
             h_split(in_split);
-            if obj.printout; fprintf('done\n'); end
+            if obj.printout; 
+                fprintf('done\n'); 
+                toc(t_split);
+            end
             
+            if obj.printout; 
+                t_launch = tic;
+                fprintf('Launching the bash scripts\n'); 
+            end
             % remmat initialization
             filestruct = functions(h_kernel);
             [pathsrc, remmat, ~] = fileparts(filestruct.file);
@@ -80,17 +96,21 @@ classdef Distributor < handle
                 cmdStr = [cmdStr ' >' obj.path_res remmat '.log 2>&1'];
             end
             % perform the command
-            if obj.printout; fprintf('Launching the bash scripts\n'); end
             status = system(cmdStr);
-            
-            %if (status~=0)
-            %    error('Distributor return status : check output files .out and .err for status');
-            %end
+            if obj.printout; 
+                toc(t_launch);
+            end
             
             % merge data
-            if obj.printout; fprintf('Merging data...'); end
+            if obj.printout; 
+                t_merge = tic;
+                fprintf('Merging data...'); 
+            end
             out_merge = h_merge(in_merge);
-            if obj.printout; fprintf('done\n'); end
+            if obj.printout; 
+                fprintf('done\n'); 
+                toc(t_merge);
+            end
         end
         
         function status = scp_cached_data(obj, cnda) % where cnda is CachedNDArray data structure
@@ -114,9 +134,13 @@ classdef Distributor < handle
                 cmdStr = [cmdStr ' >' obj.path_res 'transfer.log 2>&1'];
             end
             if (obj.printout)
-                fprintf('Lauching .dat transfer script\n');
+                tic;
+                fprintf('Launching .dat transfer script\n');
             end
             status = system(cmdStr);
+            if (obj.printout)
+                toc;
+            end
         end
     end
 
