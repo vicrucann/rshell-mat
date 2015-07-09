@@ -97,10 +97,10 @@ printf "Pause time is set to %i\n" $SLEEPTIME
 PATH_RES=${args[$(($nargs-3))]}
 mkdir -p $PATH_RES
 printf "The folder to collect result files: %s\n" $PATH_RES
-printf "\nFinished reading the input arguments\n" #}}}
+printf "\nFinished reading the input arguments\n"
 
 CVARS=${args[$(($nargs-2))]}
-NCVARS=${args[$(($nargs-1))]}
+NCVARS=${args[$(($nargs-1))]} #}}}
 
 # CONNECT TO REMOTES, SCP FILES, LAUNCH REMOTE BASH#{{{
 # ================
@@ -127,7 +127,7 @@ done #}}}
 # ================
 
 printf "\nWaiting for Matlab scripts to terminate\n"
-TLIMIT=1000 # max wait time = TLIMIT * SLEEPTIME
+TLIMIT=5000 # max wait time = TLIMIT * SLEEPTIME
 count=0
 tot=0
 while [[ $tot -eq 0 ]]; do
