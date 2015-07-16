@@ -97,18 +97,18 @@ The distribution scripts assume all the remote machines have the same login id a
 When using a Windows maching as a SSHD server, it is necessary to install and configure cygwin: [Cygwin - SSHD Configuration](http://techtorials.me/cygwin/sshd-configuration/). Here, the main steps are described briefly:  
 1. Install Cygwin on Windows; when installing make sure to include the following packages: cygrunsrv, openssh (you can find them by using search).  
 2. Edit Path variable on Windows, append the following string: ";c:\cygwin\bin" and click OK.  
-3. Chose a username for the server (new user will be created on your Windows machine), for the ditributor, chose the same username for all of your machines.
+3. Chose a username for the server (new user will be created on your Windows machine), for the ditributor, chose the same username for all of your machines.  
 4. Create a new used with the chosen username on Windows.  
 5. Run cygwin as administrator.  
 6. Type the following commands / answers: 
-    * `ssh-host-config`  
-    * `yes` to privilege separation  
-    * `yes` to install sshd as a service  
-    * `[]` empty for value of CYGWIN for the daemon  
-    * `yes` to use a different name  
-    * `username` for the new username, e.g. `cryo`  
-    * `username` to reenter  
-    * `password` enter the password for the username (must be the same on all machines that distributor will use); reenter  
+    `ssh-host-config`  
+    `yes` to privilege separation   
+    `yes` to install sshd as a service   
+    `[]` empty for value of CYGWIN for the daemon   
+    `yes` to use a different name  
+    `username` for the new username, e.g. `cryo`  
+    `username` to reenter  
+    `password` enter the password for the username (must be the same on all machines that distributor will use); reenter  
 7. Setup Local Security Authority (LSA) by running: 
     * `cyglsa-config`  
     * Answer `yes` to all of the questions  
