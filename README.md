@@ -92,7 +92,30 @@ The necessity to have `.dat` files might not be obvious, but we use **rshell-mat
 
 ## Notes  
 
-The distribution scripts assume all the remote machines have the same login id and are accessed using public key authorization (pass phrase), a tutorial on [How do I set up SSH public-key authentication to connect to a remote system](https://kb.iu.edu/d/aews).  
+#### Setting up SSH public-key authentication
+
+The distribution scripts assume all the remote machines have the same login id and are accessed using public key authorization (pass phrase), for full step-by-step, refer to a tutorial on [How do I set up SSH public-key authentication to connect to a remote system](https://kb.iu.edu/d/aews). Here we list a brief description of the procedure:  
+* On the local maching (what is intended to be a head), generate public and private keys by running the command:  
+```ssh-keygen -t rsa```
+    * Provide filename (press <Enter> to save it as default - `id_rsa.pub`, recommended) and a passphrase (press <Enter> to not use any pass phrase, not recommended)
+* Copy `id_rsa.pub` to the remote(-s) - this is your public key
+* On each of the remotes do following:    
+    * `cat id_rsa.pub >> ~/.ssh/authorized_keys`
+    * Set the correct priveleges: 
+```
+chmod 600 ~/.ssh/authorized_keys  
+chmod 700 ~/.ssh 
+```
+* Now you can test the ssh connection by a simple `ssh` command or by using `ssh-agent` (you are supposed to use `ssh-agent` for distributor anyway):  
+```
+eval ssh-agent
+ssh-add 
+```
+* Make sure there is no password promt, but pass phrase promt
+* Remove the `ssh-agent` after exiting  
+```
+kill $SSH_AGENT_PID
+```
 
 #### Setting up SSHD server using Cygwin on Windows
 
