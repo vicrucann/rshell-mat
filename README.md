@@ -111,18 +111,18 @@ When using a Windows maching as a SSHD server, it is necessary to install and co
     * `username` for the new username, e.g. `cryo`  
     * `username` to reenter  
     * `password` enter the password for the username (must be the same on all machines that distributor will use); reenter  
-7. Setup Local Security Authority (LSA) by running:  
-    `cyglsa-config`  
-    Answer `yes` to all of the questions  
-8. The last operation will automatically reboot the system  
-9. Sometimes it is necessary to edit **etc/sshd-config** file and set to `yes` the following attributes:  
-    `X11Forwarding`  
-    `RSA Authentication`  
-    `Publickey Authentication` 
-    `Allow users` to the username you are planning to login from, e.g. `cryo`  
-10. The changes will take place after restarting the sshd service: 
-    `net start sshd` 
-    `net stop ssds`  
+* Setup Local Security Authority (LSA) by running:  
+    * `cyglsa-config`  
+    * Answer `yes` to all of the questions  
+* The last operation will automatically reboot the system  
+* Sometimes it is necessary to edit **etc/sshd-config** file and set to `yes` the following attributes:  
+    * `X11Forwarding`  
+    * `RSA Authentication`  
+    * `Publickey Authentication` 
+    * `Allow users` to the username you are planning to login from, e.g. `cryo`  
+* The changes will take place after restarting the sshd service: 
+    * `net start sshd` 
+    * `net stop ssds`  
 
 #### Specifics
 
