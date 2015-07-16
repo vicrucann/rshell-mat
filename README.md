@@ -108,7 +108,7 @@ chmod 700 ~/.ssh
 ```
 * Now you can test the ssh connection by a simple `ssh` command or by using `ssh-agent` (you are supposed to use `ssh-agent` for distributor anyway):  
 ```
-eval /`ssh-agent/`
+eval `ssh-agent`
 ssh-add 
 ```
 * Make sure there is no password promt, but pass phrase promt
