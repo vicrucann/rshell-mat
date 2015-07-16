@@ -96,20 +96,22 @@ The necessity to have `.dat` files might not be obvious, but we use **rshell-mat
 
 The distribution scripts assume all the remote machines have the same login id and are accessed using public key authorization (pass phrase), for full step-by-step, refer to a tutorial on [How do I set up SSH public-key authentication to connect to a remote system](https://kb.iu.edu/d/aews). Here we list a brief description of the procedure:  
 * On the local maching (what is intended to be a head), generate public and private keys by running the command:  
-```ssh-keygen -t rsa```
+```
+ssh-keygen -t rsa
+```  
     * Provide filename (press <Enter> to save it as default - `id_rsa.pub`, recommended) and a passphrase (press <Enter> to not use any pass phrase, not recommended)
 * Copy `id_rsa.pub` to the remote(-s) - this is your public key
-* On each of the remotes do following:    
+* On each of the remotes do following:  
     * `cat id_rsa.pub >> ~/.ssh/authorized_keys`
-    * Set the correct priveleges: 
+    * Set the correct priveleges:  
 ```
 chmod 600 ~/.ssh/authorized_keys  
-chmod 700 ~/.ssh 
+chmod 700 ~/.ssh  
 ```
 * Now you can test the ssh connection by a simple `ssh` command or by using `ssh-agent` (you are supposed to use `ssh-agent` for distributor anyway):  
 ```
-eval `ssh-agent`
-ssh-add 
+eval ssh-agent
+ssh-add  
 ```
 * Make sure there is no password promt, but pass phrase promt
 * Remove the `ssh-agent` after exiting  
@@ -119,11 +121,11 @@ kill $SSH_AGENT_PID
 
 #### Setting up SSHD server using Cygwin on Windows
 
-When using a Windows maching as a SSHD server, it is necessary to install and configure cygwin: [Cygwin - SSHD Configuration](http://techtorials.me/cygwin/sshd-configuration/). Here, the main steps are described briefly:  
+When using a Windows maching as a SSHD server, it is necessary to install and configure cygwin: [Cygwin - SSHD Configuration](http://techtorials.me/cygwin/sshd-configuration/). Here, the main steps are described briefly (the steps will require administration rights and will ask to reboot the system at the end):  
 * Install Cygwin on Windows; when installing make sure to include the following packages: cygrunsrv, openssh (you can find them by using search).  
-* Edit Path variable on Windows, append the following string: ";c:\cygwin\bin" and click OK.  
-* Chose a username for the server (new user will be created on your Windows machine), for the ditributor, chose the same username for all of your machines.  
-* Create a new used with the chosen username on Windows.  
+* Edit Path variable on Windows, append the following string: ";c:\cygwin\bin" (the path where Cygwin is installed) and click OK.  
+* Chose a username for the server (new user will be created on your Windows machine); for the distributor chose the same username as for all of your other remote machines.  
+* Create a new user with the chosen username on Windows.  
 * Run cygwin as administrator.  
 * Type the following commands / answers:   
     * `ssh-host-config`  
