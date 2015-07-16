@@ -127,12 +127,12 @@ When using a Windows maching as a SSHD server, it is necessary to install and co
 #### Enabling arcfour cipher (for Windows)
 
 The distributor uses an *arcfour* cipher to compress the transferred data. You can always remove its usage by editing the `dhead.sh` file. Otherwise, Cygwin does not allow this cipher by default, therefore, we need to include it manually (normally, you do not have to do anything for Linux). Enabling is done by followind the steps:  
-* First make sure the cipher is available on the current machine, type in Cygwin:  
-```ssh -Q cipher localhost | paste -d , -s```
+* First make sure the cipher is available on the current machine, type in Cygwin:   
+```ssh -Q cipher localhost | paste -d , -s```  
 It will list all the available ciphers of the system. Make sure `arcfour` is in the list.  
-* Edit the config file `vim etc/sshd_config` (or `etc/ssh/sshd_config`) to include the cipher by adding the line: 
-```Ciphers arcfour```
-* Restart the sshd server: 
+* Edit the config file `vim etc/sshd_config` (or `etc/ssh/sshd_config`) to include the cipher by adding the line:   
+```Ciphers arcfour```  
+* Restart the sshd server:   
 ```
 net sshd stop  
 net sshd start  
