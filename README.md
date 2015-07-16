@@ -94,7 +94,34 @@ The necessity to have `.dat` files might not be obvious, but we use **rshell-mat
 
 The distribution scripts assume all the remote machines have the same login id and are accessed using public key authorization (pass phrase), a tutorial on [How do I set up SSH public-key authentication to connect to a remote system](https://kb.iu.edu/d/aews).  
 
-When using a Windows maching as a SSHD server, it is necessary to install and configure cygwin: [Cygwin - SSHD Configuration](techtorials.me/cygwin/sshd-configuration/).  
+When using a Windows maching as a SSHD server, it is necessary to install and configure cygwin: [Cygwin - SSHD Configuration](http://techtorials.me/cygwin/sshd-configuration/). Here, the main steps are described briefly:  
+1. Install Cygwin on Windows; when installing make sure to include the following packages: cygrunsrv, openssh (you can find them by using search).  
+2. Edit Path variable on Windows, append the following string: ";c:\cygwin\bin" and click OK.  
+3. Chose a username for the server (new user will be created on your Windows machine), for the ditributor, chose the same username for all of your machines.
+4. Create a new used with the chosen username on Windows.  
+5. Run cygwin as administrator.  
+6. Type the following commands / answers: 
+    * `ssh-host-config`  
+    * `yes` to privilege separation  
+    * `yes` to install sshd as a service  
+    * `[]` empty for value of CYGWIN for the daemon  
+    * `yes` to use a different name  
+    * `username` for the new username, e.g. `cryo`  
+    * `username` to reenter  
+    * `password` enter the password for the username (must be the same on all machines that distributor will use); reenter  
+7. Setup Local Security Authority (LSA) by running: 
+    * `cyglsa-config`  
+    * Answer `yes` to all of the questions  
+8. The last operation will automatically reboot the system  
+9. Sometimes it is necessary to edit **etc/sshd-config** file and set to `yes` the following attributes:  
+    * `X11Forwarding`  
+    * `RSA Authentication`  
+    * `Publickey Authentication`
+    * `Allow users` to the username you are planning to login from, e.g. `cryo`  
+10. The changes will take place after restarting the sshd service: 
+    * `net start sshd` 
+    * `net stop ssds`  
+
 
 The distributed scrip **clears all the data in the provided work folder**, so make sure it is either new folder or you do not have any valuable data in the work directories on each of the remotes.  
 
