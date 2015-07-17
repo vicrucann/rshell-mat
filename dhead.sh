@@ -127,7 +127,7 @@ done #}}}
 # ================
 
 printf "\nWaiting for Matlab scripts to terminate\n"
-TLIMIT=5000 # max wait time = TLIMIT * SLEEPTIME
+TLIMIT=10000 # max wait time = TLIMIT * SLEEPTIME
 count=0
 tot=0
 while [[ $tot -eq 0 ]]; do
