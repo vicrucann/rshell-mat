@@ -96,9 +96,7 @@ The necessity to have `.dat` files might not be obvious, but we use **rshell-mat
 
 The distribution scripts assume all the remote machines have the same login id and are accessed using public key authorization (pass phrase), for full step-by-step, refer to a tutorial on [How do I set up SSH public-key authentication to connect to a remote system](https://kb.iu.edu/d/aews). Here we list a brief description of the procedure:  
 * On the local maching (what is intended to be a head), generate public and private keys by running the command:  
-```
-ssh-keygen -t rsa
-```  
+`ssh-keygen -t rsa`  
     * Provide filename (press <Enter> to save it as default - `id_rsa.pub`, recommended) and a passphrase (press <Enter> to not use any pass phrase, not recommended)
 * Copy `id_rsa.pub` to the remote(-s) - this is your public key
 * On each of the remotes do following:  
