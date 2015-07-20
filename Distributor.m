@@ -143,11 +143,15 @@ classdef Distributor < handle
             end
         end
         
-        % h_func is a handle to a function, in a form "@func_name"
+        % h_func is a handle to a function or a class file, in a form 
+        % "@func_name" or "@class_name"
         function status = scp_function(obj, h_func)
-            filestruct = functions(h_func);
-            [path_func, func_name, ~] = fileparts(filestruct.file);
+            func_str = char(h_func);
+            filename = which(func_str);
+            %filestruct = functions(h_func);
+            [path_func, func_name, file_ext] = fileparts(filename);
             path_func = correctpath(path_func);
+            func_name = [func_name file_ext];
             
             dscp = [obj.path_curr 'dscp.sh'];
             system(['chmod u+x ' dscp]);

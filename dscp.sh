@@ -30,7 +30,7 @@ printf "The remote working directory: %s\n" $PATH_REM
 PATH_FUNC=${args[2]}
 FUNC_NAME=${args[3]}
 test -e $PATH_FUNC$FUNC_NAME
-if [ $? -ne 0 ];
+if [ $? -ne 0 ]; then
   printf "ERROR: no such file: %s\n" $PATH_FUNC$FUNC_NAME
   exit 1
 fi
