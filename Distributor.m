@@ -134,12 +134,36 @@ classdef Distributor < handle
                 cmdStr = [cmdStr ' >' obj.path_res 'transfer.log 2>&1'];
             end
             if (obj.printout)
-                tic;
+                t_dtransfer = tic;
                 fprintf('Launching .dat transfer script\n');
             end
             status = system(cmdStr);
             if (obj.printout)
-                toc;
+                toc(t_dtransfer);
+            end
+        end
+        
+        % h_func is a handle to a function, in a form "@func_name"
+        function status = scp_function(obj, h_func)
+            filestruct = functions(h_func);
+            [path_func, func_name, ~] = fileparts(filestruct.file);
+            path_func = correctpath(path_func);
+            
+            dscp = [obj.path_curr 'dscp.sh'];
+            system(['chmod u+x ' dscp]);
+            
+            cmdStr = [dscp ' ' obj.login ' ' obj.path_rem ' ' ...
+                path_func ' ' func_name ' ' obj.ipaddrs];
+            if ~obj.printout
+                cmdStr = [cmdStr ' >' obj.path_res 'transfer.log 2>&1'];
+            end
+            if (obj.printout)
+                t_dscp = tic;
+                fprintf('Launching .dat transfer script\n');
+            end
+            status = system(cmdStr);
+            if (obj.printout)
+                toc(t_dscp);
             end
         end
     end
