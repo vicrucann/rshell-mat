@@ -163,7 +163,7 @@ classdef Distributor < handle
             end
             if (obj.printout)
                 t_dscp = tic;
-                fprintf('Launching .dat transfer script\n');
+                fprintf('Launching .m transfer script\n');
             end
             status = system(cmdStr);
             if (obj.printout)
