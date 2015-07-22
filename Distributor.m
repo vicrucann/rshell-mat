@@ -17,6 +17,7 @@ classdef Distributor < handle
         cached=0; % flag if there are any cached variables that were copied
         ncache=0; % number of those vars
         cvars='empty'; % vector of strings that contain names of cached vars, currently supports only 1 var max
+        time_stats=0;
     end
     
     methods
@@ -41,6 +42,8 @@ classdef Distributor < handle
                 mkdir(obj.path_res, 'result_distr');
                 obj.test_connection();
             end
+            obj.time_stats = struct('transfer_mat', 0, 'transfer_dat', 0, 'transfer_m', 0, ...
+                'split', 0, 'merge', 0, 'launch', 0);
         end
         
         function test_connection(obj)
@@ -67,8 +70,8 @@ classdef Distributor < handle
         % launching framework: split, distribute, merge
         function out_merge = launch(obj, h_split, in_split, h_kernel, h_merge, in_merge)   
             % split data
+            t_split = tic;
             if (obj.printout); 
-                t_split = tic; 
                 fprintf('Splitting the data...'); 
             end
             h_split(in_split);
@@ -76,9 +79,10 @@ classdef Distributor < handle
                 fprintf('done\n'); 
                 toc(t_split);
             end
+            obj.time_stats.split = toc(t_split);
             
+            t_launch = tic;
             if obj.printout; 
-                t_launch = tic;
                 fprintf('Launching the bash scripts\n'); 
             end
             % remmat initialization
@@ -100,10 +104,11 @@ classdef Distributor < handle
             if obj.printout; 
                 toc(t_launch);
             end
+            obj.time_stats.launch = toc(t_launch);
             
             % merge data
+            t_merge = tic;
             if obj.printout; 
-                t_merge = tic;
                 fprintf('Merging data...'); 
             end
             out_merge = h_merge(in_merge);
@@ -111,9 +116,11 @@ classdef Distributor < handle
                 fprintf('done\n'); 
                 toc(t_merge);
             end
+            obj.time_stats.merge = toc(t_merge);
         end
         
         function status = scp_cached_data(obj, cnda) % where cnda is CachedNDArray data structure
+            t_scp_dat=tic;
             assert(obj.cached == 0, 'Current version supports only 1 cached varaible data transfer');
             
             cache = cnda.window.vname; % variable name
@@ -141,11 +148,13 @@ classdef Distributor < handle
             if (obj.printout)
                 toc(t_dtransfer);
             end
+            obj.time_stats.transfer_dat = toc(t_scp_dat);
         end
         
         % h_func is a handle to a function or a class file, in a form 
         % "@func_name" or "@class_name"
         function status = scp_function(obj, h_func)
+            t_scp_func = tic;
             func_str = char(h_func);
             filename = which(func_str);
             %filestruct = functions(h_func);
@@ -169,6 +178,17 @@ classdef Distributor < handle
             if (obj.printout)
                 toc(t_dscp);
             end
+            obj.time_stats.transfer_m = toc(t_scp_func);
+        end
+        
+        function print_timestats(obj)
+            totT = obj.time_stats.transfer_m + obj.time_stats.transfer_dat + ...
+                obj.time_stats.merge + obj.time_stats.launch + obj.time_stats.split;
+            fprintf('Transfer tot .m files:  %f sec, %f perc\n', obj.time_stats.transfer_m, obj.time_stats.transfer_m/totT);
+            fprintf('Transfer tot dat files: %f sec, %f perc\n', obj.time_stats.transfer_dat, obj.time_stats.transfer_dat/totT);
+            fprintf('Splitting data:         %f sec, %f perc\n', obj.time_stats.split, obj.time_stats.split/totT);
+            fprintf('Bash launcher:          %f sec, %f perc\n', obj.time_stats.launch, obj.time_stats.launch/totT);
+            fprintf('Merging data:           %f sec, %f perc\n', obj.time_stats.merge, obj.time_stats.merge/totT);
         end
     end
 
