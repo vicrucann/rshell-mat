@@ -184,11 +184,11 @@ classdef Distributor < handle
         function print_timestats(obj)
             totT = obj.time_stats.transfer_m + obj.time_stats.transfer_dat + ...
                 obj.time_stats.merge + obj.time_stats.launch + obj.time_stats.split;
-            fprintf('Transfer tot .m files:  %f sec, %f perc\n', obj.time_stats.transfer_m, obj.time_stats.transfer_m/totT);
-            fprintf('Transfer tot dat files: %f sec, %f perc\n', obj.time_stats.transfer_dat, obj.time_stats.transfer_dat/totT);
-            fprintf('Splitting data:         %f sec, %f perc\n', obj.time_stats.split, obj.time_stats.split/totT);
-            fprintf('Bash launcher:          %f sec, %f perc\n', obj.time_stats.launch, obj.time_stats.launch/totT);
-            fprintf('Merging data:           %f sec, %f perc\n', obj.time_stats.merge, obj.time_stats.merge/totT);
+            fprintf('Transfer tot .m files:  %.1f sec, %.2f perc\n', obj.time_stats.transfer_m, round(obj.time_stats.transfer_m/totT)*100);
+            fprintf('Transfer tot dat files: %.1f sec, %.2f perc\n', obj.time_stats.transfer_dat, round(obj.time_stats.transfer_dat/totT)*100);
+            fprintf('Splitting data:         %.1f sec, %.2f perc\n', obj.time_stats.split, round(obj.time_stats.split/totT)*100);
+            fprintf('Bash launcher:          %.1f sec, %.2f perc\n', obj.time_stats.launch, round(obj.time_stats.launch/totT)*100);
+            fprintf('Merging data:           %.1f sec, %.2f perc\n', obj.time_stats.merge, round(obj.time_stats.merge/totT)*100);
         end
     end
 
