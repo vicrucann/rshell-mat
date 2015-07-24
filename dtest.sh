@@ -1,7 +1,9 @@
 #!/bin/bash
 #
 # A script to test accessibility to spicified IP addresses
-# Also tests if the private key is added (ssh-add)
+# Tests if the private key is added (ssh-add), if not, throws connectivity error
+# Creates a workfolder on each of the remotes
+# If the workfolder already exists, it clears all the previous data stored in there
 
 printf "Testing if SSH connection can be set up successfully\n"
 args=("$@")
