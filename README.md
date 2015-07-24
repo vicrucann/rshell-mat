@@ -117,6 +117,17 @@ The `kernel` function have two or four variables as input: `file_mat` is a `.mat
 
 The necessity to have `.dat` files might not be obvious, but we use **rshell-mat** in conjunction with [CachedNDArray](https://github.com/vicrucann/cacharr) data structure for our [cryo3D](https://github.com/vicrucann/cryo3d) project (see [Notes](https://github.com/vicrucann/rshell-mat/tree/auto#notes) for more details), for that reason we figured out that not all the data can be stored and transferred as `.mat` file, but in case if there is any other disk data, it could be transferred and used as a `.dat` file.  
 
+#### LOG files  
+
+For each Matlab and Bash process, there is a specified `*.log` file that allows to check the running status and/or for any errors that can occur - whether on local or remote machines. The list of `.log` files is as follows:  
+* Local log files  
+    * `tester.log` - generated on local machine when user choses to suppress any distributor output; it contains the information on `ssh` connectivity and accessibility to remotes tests  
+    * `transfer.log` - generated on local machine when user choses to suppress any distributor output; it containds the information on performance of `.dat` and `.m` files transfers  
+    * `remmat.log` - with `remmat` being defined by user (see [Parameter List](https://github.com/vicrucann/rshell-mat#list-of-parameters) for details) - generated on a local machine when user choses to suppress any distributor output; it contains the progress steps of the `dhead.sh` Bash launcher, i.e. `.mat` data transfer, Matlab remote launching, output data transfer, etc.  
+* Remote log files
+    * `*.out` - generated on each of the remote machines, it contains information on the `dserver.sh` steps, as well as Matlab wrapper output (if any was provided by a user)  
+    * `*.err` - generated on each of the remote machines, it only contains error messages that caused `dserver.sh` or Matlab wrapper to stop  
+
 ## Notes  
 
 #### Setting up SSH public-key authentication
