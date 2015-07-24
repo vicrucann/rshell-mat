@@ -112,14 +112,14 @@ printf "\nFile transfer and script launching\n"
 for IPA in ${IPADDRS[@]}; do
 	ssh $LOGIN@$IPA "mkdir -p $PATH_REM" # create working directory, if necessary
 	ssh $LOGIN@$IPA "rm -f $PATH_REM/*.mat" # clear the working directory from any previous data
-	ssh $LOGIN@$IPA "rm -f $PATH_REM/*.out" # clear the working directory from any previous data
-	ssh $LOGIN@$IPA "rm -f $PATH_REM/*.err" # clear the working directory from any previous data
+#	ssh $LOGIN@$IPA "rm -f $PATH_REM/*.out" # clear the working directory from any previous data
+#	ssh $LOGIN@$IPA "rm -f $PATH_REM/*.err" # clear the working directory from any previous data
 	ssh $LOGIN@$IPA "rm -f $PATH_REM/*.dn" # clear the working directory from any previous data
 	scp $PATH_CURR$REM_BASH $LOGIN@$IPA:$PATH_REM
 	scp $PATH_FUN$REM_FUN.m $LOGIN@$IPA:$PATH_REM
 	scp -c arcfour $PATH_VARS${IFILES[$i]} $LOGIN@$IPA:$PATH_REM
 
-	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PATH_REM; chmod u+x $REM_BASH; nohup ./$REM_BASH $REM_FUN ${IFILES[$i]} $CVARS $NCVARS  > $VARS.out 2> $VARS.err < /dev/null &'"
+	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PATH_REM; chmod u+x $REM_BASH; nohup ./$REM_BASH $REM_FUN ${IFILES[$i]} $CVARS $NCVARS  >> $VARS.out 2>> $VARS.err < /dev/null &'"
 	i=$((i+1))
 done #}}}
 

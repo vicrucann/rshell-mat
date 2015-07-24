@@ -143,7 +143,7 @@ classdef Distributor < handle
             cmdStr = [transfer ' ' obj.login ' ' obj.path_rem ' ' ...
                     int2str(obj.ncache) ' ' path_cache ' ' cache ' ' obj.ipaddrs];
             if ~obj.printout
-                cmdStr = [cmdStr ' >' obj.path_res 'transfer.log 2>&1'];
+                cmdStr = [cmdStr ' >>' obj.path_res 'transfer.log 2>&1'];
             end
             if (obj.printout)
                 t_dtransfer = tic;
@@ -162,7 +162,6 @@ classdef Distributor < handle
             t_scp_func = tic;
             func_str = char(h_func);
             filename = which(func_str);
-            %filestruct = functions(h_func);
             [path_func, func_name, file_ext] = fileparts(filename);
             path_func = correctpath(path_func);
             func_name = [func_name file_ext];
@@ -173,11 +172,11 @@ classdef Distributor < handle
             cmdStr = [dscp ' ' obj.login ' ' obj.path_rem ' ' ...
                 path_func ' ' func_name ' ' obj.ipaddrs];
             if ~obj.printout
-                cmdStr = [cmdStr ' >' obj.path_res 'transfer.log 2>&1'];
+                cmdStr = [cmdStr ' >>' obj.path_res 'transfer.log 2>&1'];
             end
             if (obj.printout)
                 t_dscp = tic;
-                fprintf('Launching .m transfer script\n');
+                fprintf('Starting .m transfer\n');
             end
             status = system(cmdStr);
             if (obj.printout)

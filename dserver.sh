@@ -41,13 +41,13 @@ printf "Result save name: %s\n\n" $RESFILE #}}}
 #{{{# LAUNCH THE MATLAB FUNCTION
 # ================
 
-#printf "\nRunning matlab script\n"
+printf "\nRunning matlab script\n"
 matlab -nodisplay -nojvm -nosplash -nodesktop -wait -r "$REMMAT('$IFILE','$RESFILE','$CACHE','$NCACHE');quit();"
-#printf "\nMatlab work done\n" #}}}
+printf "\nMatlab work done\n" #}}}
 
 #{{{# INDICATE MATLAB HAD FINISHED CALCULATIONS
 # ================
 
 > dserver.dn
-#printf "\nresult.dn file generated\n" #}}}
+printf "\nresult.dn file generated\n" #}}}
 
