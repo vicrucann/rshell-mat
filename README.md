@@ -35,15 +35,15 @@ kill $SSH_AGENT_PID
 
 ## Main workflow of the Distributor processes  
 These are the main steps that happen inside when the Distributor is run:  
-1. Initialization: 
+* Initialization: 
     * Connectivity tests for each of the remotes   
     * Creating / clearing the remote workfolder for each of the remotes (all files are deleted)  
     * Creating / clearing the local workfolder (`*.log` and `result*.mat` files are deleted)  
     * Internal variable initialization  
-2. Copying any additional files to the remotes (optional step):  
+* Copying any additional files to the remotes (optional step):  
     * Copying of the additional Matlab functions or classes that will be used during remote computations (note: the wrapper function file is not included in this step)  
     * Copying of any additional `.dat` files that are tied to [CachedNDArray](https://github.com/vicrucann/cacharr) Matlab data class   
-3. Running the distributor:  
+* Running the distributor:  
     * Splitting the data - is done based on the user-provided function and input  
     * Distribtion which automatically copies saved by user `.mat` files to the corresponding remotes, launching the Matlan wrappers on the remotes, waiting for the results and then copying back the generated result `.mat` files to the local workfolder  
     * Mering the obtained data in order to use it further in Matlab local session   
