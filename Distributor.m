@@ -39,7 +39,9 @@ classdef Distributor < handle
             [obj.ncluster, ~] = find(ipaddrs==' '); % to break data into n clusters (as many as given servers)
             obj.ncluster = size(obj.ncluster,2)+1;
             if (obj.ncluster > 1)
-                mkdir(obj.path_res, 'result_distr');
+                mkdir(obj.path_res);
+                delete([obj.path_res '*.log']);
+                delete([obj.path_res 'result*.mat']);
                 obj.test_connection();
             end
             obj.time_stats = struct('transfer_mat', 0, 'transfer_dat', 0, 'transfer_m', 0, ...
