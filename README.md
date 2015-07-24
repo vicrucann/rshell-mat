@@ -23,7 +23,7 @@ The scripts are able to distribute the data processing among Linux servers, Wind
 
 ## Quick start
 
-A usage example is provided - calculation of the Mandelbrot set. To run the example, you can use **test_rshell_mat.m** with the following steps:   
+The Matlab interface class called `Distributor.m` manages the usage of all the Bash scripts. A Matlab example is provided - calculation of the Mandelbrot set. To run the example, you can use **test_rshell_mat.m** with the following steps:   
 * **IMPORTANT**: it is necessary to set up the login process through the SSH public-key, otherwise the password prompts will not allow for the programm to continue (see [Notes](https://github.com/vicrucann/rshell-mat#notes) for tutorial examples).  
 * Before launching the Matlab, set up the SSH connection to the remotes by using *ssh-agent*. For example, run the folloing commands in your command line (it **must** be Linux environment):  
 ```

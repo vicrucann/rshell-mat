@@ -79,7 +79,7 @@ i=0
 printf "\nFile transfer\n"
 for IPA in ${IPADDRS[@]}; do
 	ssh $LOGIN@$IPA "mkdir -p $PATH_REM" # create working directory, if necessary
-	ssh $LOGIN@$IPA "rm -f $PATH_REM/*" # clear the working directory from any previous data
+	ssh $LOGIN@$IPA "rm -f $PATH_REM/*.dat" # clear the working directory from any previous data
   for (( j = 0; j < $ncache ; j++ )); do
     idx=$(($i*$ncache+$j))
     scp -c arcfour $PATH_CACHE${CFILES[$idx]} $LOGIN@$IPA:$PATH_REM
