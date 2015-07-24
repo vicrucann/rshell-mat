@@ -1,19 +1,22 @@
 ## Short description
 
-*rshell-mat* is bash script based project that helps to ease heavy data processing in Matlab. Its main idea is to send the split big data to several remote servers and run the most heavy computations simultaneously using those remotes. When the processing is done, the split result files are copied back to the local machine, merged by using the user-provided function; so the data can be used further in Matlab. The processing is done by two main bash scripts and a Matlab class:  
+*rshell-mat* is bash script based project that helps to ease heavy data processing in Matlab. Its main idea is to send the split data to several remote servers and run the most heavy computations simultaneously using those remotes. When the processing is done, the split result files are copied back to the local machine, merged by using the user-provided function; so the data can be used further in Matlab. The processing is done by the bash scripts and a Matlab class:  
 * *dhead.sh* - a local head script that performs the distribution among the remote servers and also copying all the files forward and back  
 * *dserver.sh* - a remote server script that launches matlab function on the remote server  
+* *dtest.sh* - a tester script that checks connectivity to the remotes and clears all the previous data inside the remote working directory  
+* *dscp.h* - a script to copy any additional *.m* files such as Matlab functions and classes that are necessesary for computaions on remotes  
+* *dtransfer.sh* - a script that copies any additional heavy data, in *.dat* format; the script is optionally used and works only and directly with [CachedNDArray](https://github.com/vicrucann/cacharr) matlab class  
 * *Distrubutor.m* - is a handle Matlab interface, that coordinates data initialization, splitting, script launching and merging. Note, the split, kernel and merge functions must be provided by user, as well as initialized structures for each method.  
 
 ## Platforms  
 
-The scripts are able to distribute the data processing among Linux servers, Windows (Cygwin SSHD) servers and the mixture of both. SSH connection is used for all the processing.  
+The scripts are able to distribute the data processing among Linux servers, Windows (Cygwin SSHD) servers and the mixture of both. SSH connection is used for all the processing. As for the head (local) machine, it must be Linux, since we could not find a way to make it work within Cygwin due to impossibility to tie up ssh-agent, ssh-add and a Matlab process. 
 
 ## Quick start
 
 A usage example is provided - calculation of the Mandelbrot set. To run the example, you can use **test_rshell_mat.m** with the following steps:   
 * **IMPORTANT**: it is necessary to set up the login process through the SSH public-key, otherwise the password prompts will not allow for the programm to continue (see [Notes](https://github.com/vicrucann/rshell-mat#notes) for tutorial examples).  
-* Before launching the Matlab, set up the SSH connection to the remotes by using *ssh-agent*. For example, run the folloing commands in your command line:  
+* Before launching the Matlab, set up the SSH connection to the remotes by using *ssh-agent*. For example, run the folloing commands in your command line (it **must** be Linux environment):  
 ```
 eval `ssh-agent`
 ssh-add
@@ -38,7 +41,7 @@ Use the following steps to run your `Distributor`:
 d = Distributor(login, path_rem, ipaddrs, path_vars, vars, ...
     path_curr, sleeptime, path_res, printout);
 ```   
-Obtain function handles on your `split`, `kernel` and `merge` functions, as well as initialize the input structures for each of these functions (see [function signatures design](https://github.com/vicrucann/rshell-mat/tree/auto#providing-your-custom-functions-for-split-merge-and-wrapping-kernel)):  
+Obtain function handles on your `split`, `kernel` and `merge` functions, as well as initialize the input structures for each of these functions (see [functions signatures](https://github.com/vicrucann/rshell-mat/tree/auto#providing-your-custom-functions-for-split-merge-and-wrapping-kernel)):  
 ```
 in_split = struct('field1', val1, 'field2', val2, ...);
 in_merge = struct('field1', val1, 'field2', val2, ...);
@@ -61,32 +64,32 @@ val2 = out_merge.field2;
 
 `login` is a login id for the remotes (assumed the same for all the remotes), in a string format, e.g.: `login = 'remote_user';`.   
 
-`path_rem` is a workspace path on **remote** servers (if the folder does not exist, it will be created), e.g.: `path = '/home/remoteu/tmp'`.   
+`path_rem` is a workdirectory path on **remote** servers (note: if the folder does not exist, it will be created during the initialization; if the folder exists all the containing data will be cleared); `path = '/home/remoteu/tmp'`.   
 
-`ipaddrs` is a list of IP addresses, in a string format; it has a form of `['ipaddrs1' ' ' 'ipaddrs2' ' ' ...]` - each IP address must be separated by **one** space character from its neighbors.  
+`ipaddrs` is a list of IP addresses, in a string format; it has a form of `['ipaddrs1' ' ' 'ipaddrs2' ' ' ...]` - each IP address must be separated by **one** space character, like this: `' '`, from its neighbors.  
 
-`path_vars` is a folder path where all the `vars` data (Matlab worspace variables) is stored and loaded from.  
+`path_vars` is a folder path where all the `vars` data (Matlab worspace variables, normally in format `*.mat`) is stored and loaded from.  
 
 `vars` is a root name of temporal files where the work variables are saved to, in a string format.   
 
 `path_curr` is a folder path where the .sh scripts are located, for the Mandelbrot example case it is a full path to the current folder.  
 
-`sleeptime` is a pause interval in seconds, integer, it is used inside *dhead.sh* to wait until the tasks are finished on remotes; you may want to increase it for heavy data computations.    
+`sleeptime` is a pause interval in seconds, integer, it is used inside *dhead.sh* to wait until the tasks are finished on remotes; you may want to increase it for heavier computations.    
 
 `path_res` is a name of a temporal folder on **local** machine where the result files will be copied to, in a string format.  
 
-`printout` is a boolean (`0` or `1`) variable that allows (`1`) or suppresses (`0`) any `printf` output to the Matlab command line. Note that for big repetitive data computations it is adviced to turn it off for faster processing time.  
+`printout` is a boolean (`0` or `1`) variable that allows (`1`) or suppresses (`0`) any `printf` and `echo` bash output to the Matlab command line (in case of suppresion the outout is forwarded to a `*.log` file). Note that for big repetitive data computations it is adviced to turn the direct output off for faster processing time.  
 
 #### Providing your custom functions for split, merge and wrapping (kernel)  
 
 These are the signatures of three functions that user must provide for their *Distributor*:  
 * `function output = split(input)`  
-* `function output = kernel(file_mat, res_fname, cache_vname, ncache)` or cache parameters could be omitted: `kernel(file_mat, res_fname, ~, ~)` if you do not use any supplemental `.dat` files in computations  
+* `function output = kernel(file_mat, res_fname, cache_vname, ncache)`, note: cache parameters could be omitted, e.g: `kernel(file_mat, res_fname, ~, ~)` if you do not use any supplemental `.dat` files in computations  
 * `function output = merge(input)`  
 
 The `split` and `merge` functions have their own `input` and `output` variables which are a Matlab `struct` data types that contain the necessary variables as fields.  
 
-The `kernel` function have two or four variables as input: `file_mat` is a `.mat` filename where Matlab workspace variables are kept; `res_fname` is a filename where the result will be written to for the current remote (string format); and `cache_vname` together with `ncache` are for indication a rootname of `.dat` file where Matlab cache variable is stored and the number of such files (these parameters might be ommited). 
+The `kernel` function have two or four variables as input: `file_mat` is a `.mat` filename where Matlab workspace variables are kept; `res_fname` is a filename where the result will be written to for the current remote (string format); and `cache_vname` together with `ncache` are for indication a rootname of `.dat` file where Matlab cache variable is stored and the number of such files (the last two parameters might be ommited). 
 
 The necessity to have `.dat` files might not be obvious, but we use **rshell-mat** in conjunction with [CachedNDArray](https://github.com/vicrucann/cacharr) data structure for our [cryo3D](https://github.com/vicrucann/cryo3d) project (see [Notes](https://github.com/vicrucann/rshell-mat/tree/auto#notes) for more details), for that reason we figured out that not all the data can be stored and transferred as `.mat` file, but in case if there is any other disk data, it could be transferred and used as a `.dat` file.  
 
@@ -111,7 +114,7 @@ chmod 700 ~/.ssh
 eval ssh-agent
 ssh-add  
 ```
-* Make sure there is no password promt, but pass phrase promt
+* Make sure there is no password promt, but a pass phrase promt instead  
 * Remove the `ssh-agent` after exiting  
 ```
 kill $SSH_AGENT_PID
@@ -119,12 +122,12 @@ kill $SSH_AGENT_PID
 
 #### Setting up SSHD server using Cygwin on Windows
 
-When using a Windows maching as a SSHD server, it is necessary to install and configure cygwin: [Cygwin - SSHD Configuration](http://techtorials.me/cygwin/sshd-configuration/). Here, the main steps are described briefly (the steps will require administration rights and will ask to reboot the system at the end):  
+When using a Windows machine as a SSHD server, it is necessary to install and configure Cygwin: [Cygwin - SSHD Configuration](http://techtorials.me/cygwin/sshd-configuration/). Here, the main steps are described briefly (the steps will require administration rights and will ask to reboot the system at the end):  
 * Install Cygwin on Windows; when installing make sure to include the following packages: cygrunsrv, openssh (you can find them by using search).  
 * Edit Path variable on Windows, append the following string: ";c:\cygwin\bin" (the path where Cygwin is installed) and click OK.  
 * Chose a username for the server (new user will be created on your Windows machine); for the distributor chose the same username as for all of your other remote machines.  
 * Create a new user with the chosen username on Windows.  
-* Run cygwin as administrator.  
+* Run Cygwin as administrator.  
 * Type the following commands / answers:   
     * `ssh-host-config`  
     * `yes` to privilege separation   
@@ -163,7 +166,7 @@ net sshd start
 
 #### Specifics
 
-The distributed scrip **clears all the data in the provided work folder**, so make sure it is either new folder or you do not have any valuable data in the work directories on each of the remotes.  
+The distributed scrip **clears all the data in the provided work folder**, so make sure it is either new folder or you do not have any valuable data in the work directories on each of the remotes. The working folder will be created directly inside the `$HOME` directory of the user on each of the remotes. 
 
 #### Other
 
