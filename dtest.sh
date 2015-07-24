@@ -45,7 +45,7 @@ for IPA in ${IPADDRS[@]}; do
 	ssh $LOGIN@$IPA "mkdir -p $PATH_REM" # create working directory, if necessary
   status=$?
   if [ $status -eq 255 ]; then
-    printf "ERROR: server %s - the working directory could not be created, check the writes to run mkdir\n" $IPA
+    printf "ERROR: server %s - the working directory could not be created, check the rights to run mkdir\n" $IPA
   fi
 	ssh $LOGIN@$IPA "rm -f $PATH_REM/*" # clear the working directory from any previous data
   printf "Working directory had been created / cleared\n"
