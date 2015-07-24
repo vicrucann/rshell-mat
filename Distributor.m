@@ -52,7 +52,7 @@ classdef Distributor < handle
             end
             tester = [obj.path_curr 'dtest.sh']; 
             system(['chmod u+x ' tester]);
-            cmdStr=[tester ' ' obj.login ' ' obj.ipaddrs];
+            cmdStr=[tester ' ' obj.login ' ' obj.path_rem ' ' obj.ipaddrs];
             if ~obj.printout
                cmdStr = [cmdStr ' >' obj.path_res 'tester.log 2>&1']; 
             end
