@@ -1,16 +1,16 @@
 #!/bin/bash
 #
-# Distributor shell script to transfer any additional functions data
+# Distributor shell script to transfer any additional functions or classes
 #   Given .m filename and remote destinations
 #   Copy the file to each of the destinations
-#   dscp.sh - "distributed scp shell".
+#   dscp.sh - distributed scp
 #   2015 Victoria Rudakova, vicrucann@gmail.com
 
 # ARGUMENTS PARSING#{{{
 # ================
 # input arguments form (must be at least 5 args):
 #   login, remote_destination, path_func, func_name, {ipaddrs}
-#   The .m file has the format: `path_func/func_name.m`
+#   The .m file has the format: `path_func/func_name`
 
 args=("$@")
 printf "\nNumber of arguments passed: %d\n" $#
