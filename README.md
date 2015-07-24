@@ -1,3 +1,12 @@
+## Content
+* [Short description](https://github.com/vicrucann/rshell-mat#short-description)
+* [Platforms and other requirements](https://github.com/vicrucann/rshell-mat#platforms)
+* [Quick Start](https://github.com/vicrucann/rshell-mat#quick-start)
+* [Main workflow description](https://github.com/vicrucann/rshell-mat#main-workflow-of-the-distributor-processes)
+* [Customizing and running your own Distributor](https://github.com/vicrucann/rshell-mat#customizing-and-running-your-own-distributor)
+* [Notes and tutorials](https://github.com/vicrucann/rshell-mat#notes)
+* [Contact](https://github.com/vicrucann/rshell-mat#for-questions-and-inqueries)
+
 ## Short description
 
 *rshell-mat* is bash script based project that helps to ease heavy data processing in Matlab. Its main idea is to send the split data to several remote servers and run the most heavy computations simultaneously using those remotes. When the processing is done, the split result files are copied back to the local machine, merged by using the user-provided function; so the data can be used further in Matlab. The processing is done by the bash scripts and a Matlab class:  
