@@ -50,7 +50,7 @@ classdef Distributor < handle
         
         function test_connection(obj)
             if (obj.printout);
-                tic;
+                t_tester = tic;
             end
             tester = [obj.path_curr 'dtest.sh']; 
             system(['chmod u+x ' tester]);
@@ -62,10 +62,13 @@ classdef Distributor < handle
             if (status==0)
                 fprintf('Distributor initialized successfully\n');
             else
-                error('Could not initialize distributor - check SSH connection/settings');
+                if (~obj.printout)
+                    fprintf('Check %stester.log file to see the error message\n', path_rem);
+                end
+                error('Could not initialize distributor');
             end
             if (obj.printout);
-                toc;
+                toc(t_tester);
             end
         end
         
