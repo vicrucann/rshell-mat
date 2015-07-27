@@ -56,7 +56,7 @@ done
 
 TFIN=$(date +%s.%N) # time tracking
 DIFF=$(echo "$TFIN - $TSTART" | bc)
-printf "Time spent on distributor initialization: %i\n" $DIFF
+printf "Time spent on distributor initialization: %.0f\n" $DIFF
 
 printf "Done checking connectivity\n"
 

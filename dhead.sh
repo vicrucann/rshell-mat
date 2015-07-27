@@ -197,8 +197,8 @@ DIFF_SCPB=$(echo "$TFIN - $TSTART" | bc)
 
 printf "\nBash script terminated\n"
 printf "Timing stats: \n"
-printf "Argument parsing:   %i\n" $DIFF_PARS
-printf "SCP to remotes:     %i\n" $DIFF_SCP
-printf "Matlab wrappers:    %i\n" $DIFF_WAIT
-printf "SCP back to local:  %i\n\n\n" $DIFF_SCPB
+printf "Argument parsing:   %.0f\n" $DIFF_PARS
+printf "SCP to remotes:     %.0f\n" $DIFF_SCP
+printf "Matlab wrappers:    %.0f\n" $DIFF_WAIT
+printf "SCP back to local:  %.0f\n\n\n" $DIFF_SCPB
 printf "==========================\n"
