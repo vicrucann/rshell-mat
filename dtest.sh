@@ -7,6 +7,7 @@
 #   dtest.sh - distributed tester
 #   2015, Victoria Rudakova, vicrucann@gmail.com
 
+TSTART=$(date +%s.%N) # time tracking
 printf "Testing if SSH connection can be set up successfully\n"
 args=("$@")
 nargs=$#
@@ -53,4 +54,8 @@ for IPA in ${IPADDRS[@]}; do
   printf "Working directory had been created / cleared\n"
 done
 printf "Done checking connectivity\n"
+
+TFIN=$(date +%s.%N) # time tracking
+DIFF=$(echo "$TFIN - $TSTART" | bc)
+printf "Time spent on distributor initialization: %i\n" $DIFF
 

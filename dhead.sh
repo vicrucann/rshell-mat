@@ -25,6 +25,7 @@
 #printf "[n-1] - NCVARS : number of cached files copied to each remote \n"
 #}}}
 
+TSTART=$(date +%s.%N) # time tracking
 # ARGUMENTS PARSING#{{{
 # ================
 
@@ -101,7 +102,10 @@ printf "\nFinished reading the input arguments\n"
 
 CVARS=${args[$(($nargs-2))]}
 NCVARS=${args[$(($nargs-1))]} #}}}
+TFIN=$(date +%s.%N) # time tracking
+DIFF_PARS=$(echo "$TFIN - $TSTART" | bc)
 
+TSTART=$(date +%s.%N) # time tracking
 # CONNECT TO REMOTES, SCP FILES, LAUNCH REMOTE BASH#{{{
 # ================
 
@@ -122,7 +126,10 @@ for IPA in ${IPADDRS[@]}; do
 	ssh -n -f $LOGIN@$IPA "sh -c 'cd $PATH_REM; chmod u+x $REM_BASH; nohup ./$REM_BASH $REM_FUN ${IFILES[$i]} $CVARS $NCVARS  >> $VARS.out 2>> $VARS.err < /dev/null &'"
 	i=$((i+1))
 done #}}}
+TFIN=$(date +%s.%N) # time tracking
+DIFF_SCP=$(echo "$TFIN - $TSTART" | bc)
 
+TSTART=$(date +%s.%N) # time tracking
 # WAIT LOOP FOR MATLAB FUNCTION ON REMOTE TO TERMINATE#{{{
 # ================
 
@@ -164,7 +171,10 @@ while [[ $tot -eq 0 ]]; do
 		i=$(($i+1))
 	done
 done #}}}
+TFIN=$(date +%s.%N) # time tracking
+DIFF_WAIT=$(echo "$TFIN - $TSTART" | bc)
 
+TSTART=$(date +%s.%N) # time tracking
 # SCP FROM REMOTES TO LOCAL THE RESULT DATA #{{{
 # ================
 
@@ -182,5 +192,13 @@ for IPA in ${IPADDRS[@]}; do
 done
 
 #kill $SSH_AGENT_PID #}}}
+TFIN=$(date +%s.%N) # time tracking
+DIFF_SCPB=$(echo "$TFIN - $TSTART" | bc)
 
 printf "\nBash script terminated\n"
+printf "Timing stats: \n"
+printf "Argument parsing:   %i\n" $DIFF_PARS
+printf "SCP to remotes:     %i\n" $DIFF_SCP
+printf "Matlab wrappers:    %i\n" $DIFF_WAIT
+printf "SCP back to local:  %i\n\n\n" $DIFF_SCPB
+printf "==========================\n"
