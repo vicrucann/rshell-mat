@@ -63,7 +63,7 @@ classdef Distributor < handle
                 fprintf('Distributor initialized successfully\n');
             else
                 if (~obj.printout)
-                    fprintf('Check %stester.log file to see the error message\n', path_rem);
+                    fprintf('Check %stester.log file to see the error message\n', obj.path_rem);
                 end
                 error('Could not initialize distributor');
             end

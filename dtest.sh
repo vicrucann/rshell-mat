@@ -53,9 +53,11 @@ for IPA in ${IPADDRS[@]}; do
 	ssh $LOGIN@$IPA "rm -f $PATH_REM/*" # clear the working directory from any previous data
   printf "Working directory had been created / cleared\n"
 done
-printf "Done checking connectivity\n"
 
 TFIN=$(date +%s.%N) # time tracking
 DIFF=$(echo "$TFIN - $TSTART" | bc)
 printf "Time spent on distributor initialization: %i\n" $DIFF
+
+printf "Done checking connectivity\n"
+
 
