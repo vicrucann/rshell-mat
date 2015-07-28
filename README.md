@@ -211,7 +211,7 @@ The bash distributor package was created as a part of [cryo3d](https://github.co
 
 Two examples will be considered. The first is the provided Mandelbrot calculation; the second is the usage within the [cryo3d](https://github.com/vicrucann/cryo3d) software package for SSDs calculations.  
 
-[Cryo3d](https://github.com/vicrucann/cryo3d)-whole-pipeline performance when using single head server vs head and two remotes:  
+[Cryo3d](https://github.com/vicrucann/cryo3d)-whole-pipeline performance when using single head server vs. the same head and two remotes (the most expensive operations will be distributed between those two remotes). Different database sizes provided (the larger the more computationally expesive it is) and a sampling angle `theta` (the smaller the more computationally expensive it is).  
 ```
 Test params / Configuration      Single machine          Head + cluster of two  
 ------------------------------------------------------------------------------------   
@@ -221,7 +221,7 @@ Test params / Configuration      Single machine          Head + cluster of two
 ------------------------------------------------------------------------------------   
 65K database, theta = 12  
 65K database, theta = 6  
-15K database, theta = 3  
+65K database, theta = 3  
 ```
 
 ## For questions and inqueries 
