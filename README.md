@@ -211,12 +211,18 @@ The bash distributor package was created as a part of [cryo3d](https://github.co
 
 Two examples will be considered. The first is the provided Mandelbrot calculation; the second is the usage within the [cryo3d](https://github.com/vicrucann/cryo3d) software package for SSDs calculations.  
 
-[Cryo3d]() whole pipeline performance when using single head server vs head and two remotes:  
-
+[Cryo3d](https://github.com/vicrucann/cryo3d)-whole-pipeline performance when using single head server vs head and two remotes:  
+```
 Test params / Configuration      Single machine          Head + cluster of two  
 ------------------------------------------------------------------------------------   
 15K database, theta = 12               1.2 hrs                    0.94 hrs  
-
+15K database, theta = 6                3.25 hrs                   3.25 hrs  
+15K database, theta = 3                29 hrs                     19 hrs  
+------------------------------------------------------------------------------------   
+65K database, theta = 12  
+65K database, theta = 6  
+15K database, theta = 3  
+```
 
 ## For questions and inqueries 
 
