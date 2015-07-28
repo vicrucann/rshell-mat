@@ -205,7 +205,18 @@ The distributed scrip **clears all the data in the provided work folder**, so ma
 
 #### Other
 
-The bash distributor package was created as a part of [cryo3d](https://github.com/vicrucann/cryo3d) matlab-based software which reconstructs the 3D model of a particle based on its cryogenic images. *rshell-mat* was made to deal with the heaviest computational part of the pipeline - calculations of SSDs to find the best projection direction and transfomation parameters.  
+The bash distributor package was created as a part of [cryo3d](https://github.com/vicrucann/cryo3d) matlab-based software which reconstructs the 3D model of a particle based on its cryogenic images. *rshell-mat* was made to deal with the heaviest computational part of the pipeline - calculations of SSDs to find the best projection direction and transfomation parameters. 
+
+#### Performance examples  
+
+Two examples will be considered. The first is the provided Mandelbrot calculation; the second is the usage within the [cryo3d](https://github.com/vicrucann/cryo3d) software package for SSDs calculations.  
+
+[Cryo3d]() whole pipeline performance when using single head server vs head and two remotes:  
+
+Test params / Configuration      Single machine          Head + cluster of two  
+------------------------------------------------------------------------------------   
+15K database, theta = 12               1.2 hrs                    0.94 hrs  
+
 
 ## For questions and inqueries 
 
