@@ -213,15 +213,17 @@ Two examples will be considered. The first is the provided Mandelbrot calculatio
 
 [Cryo3d](https://github.com/vicrucann/cryo3d)-whole-pipeline performance when using single head server vs. the same head and two remotes (the most expensive operations will be distributed between those two remotes). Different database sizes provided (the larger the more computationally expesive it is) and a sampling angle `theta` (the smaller the more computationally expensive it is).  
 ```
-Test params / Configuration      Single machine          Head + cluster of two  
 ------------------------------------------------------------------------------------   
-15K database, theta = 12               1.2 hrs                    0.94 hrs  
-15K database, theta = 6                3.25 hrs                   3.25 hrs  
-15K database, theta = 3                29 hrs                     19 hrs  
+Test params / Configuration   |  Single machine     |    Head + cluster of two  
 ------------------------------------------------------------------------------------   
-65K database, theta = 12  
-65K database, theta = 6  
-65K database, theta = 3  
+15K database, theta = 12      |        1.3  hrs     |             0.94  hrs  
+15K database, theta = 6       |        3.45 hrs     |             0.00  hrs  
+15K database, theta = 3       |        29   hrs     |             21    hrs  
+------------------------------------------------------------------------------------   
+67K database, theta = 12  
+67K database, theta = 6  
+67K database, theta = 3  
+------------------------------------------------------------------------------------   
 ```
 
 ## For questions and inqueries 
