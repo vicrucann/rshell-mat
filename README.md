@@ -176,14 +176,16 @@ When using a Windows machine as a SSHD server, it is necessary to install and co
     * `cyglsa-config`  
     * Answer `yes` to all of the questions  
 * The last operation will automatically reboot the system  
-* Sometimes it is necessary to edit **etc/sshd-config** file and set to `yes` the following attributes:  
+* Sometimes it is necessary to edit ``etc/sshd_config`` file and set to `yes` the following attributes:  
     * `X11Forwarding`  
     * `RSA Authentication`  
     * `Publickey Authentication` 
-    * `Allow users` to the username you are planning to login from, e.g. `cryo`  
+    * Append to the end of the file: `Allow users` and the username you are planning to login from, e.g. `cryo` 
+* Before restarting the `sshd` server, you may need to include the *arcfour* cipher to the configuration file (see the next section) 
 * The changes will take place after restarting the sshd service: 
+    * `net stop sshd` 
     * `net start sshd` 
-    * `net stop ssds`  
+* Test if the `sshd` server was established, e.g by running `ping [ip_address]` 
 
 #### Enabling arcfour cipher (for Windows)
 
@@ -220,7 +222,7 @@ Test params / Configuration   |  Single machine     |    Head + cluster of two
 15K database, theta = 6       |        5.0  hrs     |             3.45  hrs  
 15K database, theta = 3       |        29   hrs     |             21    hrs  
 ------------------------------------------------------------------------------------   
-67K database, theta = 12  
+67K database, theta = 12      |        00  hrs      |             2.1   hrs 
 67K database, theta = 6  
 67K database, theta = 3  
 ------------------------------------------------------------------------------------   
