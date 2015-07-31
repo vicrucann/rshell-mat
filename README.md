@@ -185,7 +185,7 @@ When using a Windows machine as a SSHD server, it is necessary to install and co
 * The changes will take place after restarting the sshd service: 
     * `net stop sshd` 
     * `net start sshd` 
-* Test if the `sshd` server was established, e.g by running `ping [ip_address]` 
+* Test if the `sshd` server was established, e.g by running `ping [ip_address]` from remote machine or by running `ssh -v localhost` from the local machine where the `sshd` server was just installed   
 
 #### Enabling arcfour cipher (for Windows)
 
