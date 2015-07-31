@@ -157,7 +157,7 @@ kill $SSH_AGENT_PID
 
 #### Setting up SSHD server using Cygwin on Windows
 
-When using a Windows machine as a SSHD server, it is necessary to install and configure Cygwin: [Cygwin - SSHD Configuration](http://techtorials.me/cygwin/sshd-configuration/). Here, the main steps are described briefly (the steps will require administration rights and will ask to reboot the system at the end):  
+When using a Windows machine as a SSHD server, it is necessary to install and configure Cygwin: [Cygwin - SSHD Configuration](http://techtorials.me/cygwin/sshd-configuration/)(it is a step-by-step tutorial with other additional information). Here, the main steps are described briefly (the steps will require administration rights and will ask to reboot the system at the end):  
 * Install Cygwin on Windows; when installing make sure to include the following packages: cygrunsrv, openssh (you can find them by using search).  
 * Edit Path variable on Windows, append the following string: ";c:\cygwin\bin" (the path where Cygwin is installed) and click OK.  
 * Chose a username for the server (new user will be created on your Windows machine); for the distributor chose the same username as for all of your other remote machines.  
@@ -185,7 +185,15 @@ When using a Windows machine as a SSHD server, it is necessary to install and co
 * The changes will take place after restarting the sshd service: 
     * `net stop sshd` 
     * `net start sshd` 
-* Test if the `sshd` server was established, e.g by running `ping [ip_address]` from remote machine or by running `ssh -v localhost` from the local machine where the `sshd` server was just installed   
+* The last important step is to configure your Windows 7 firewall options, so that it allows for incoming connections. The full tutorial can be found: [Configure Windows Firewall](http://techtorials.me/cygwin/configure-windows-firewall/). The brief steps are listed below:
+    * open Windows Firewall
+    * "Inbound Rules" -> "Actions" -> "New Rule"
+    * chose "Port"
+    * chose "TCP" and "Specific local ports" and enter the port number (if during sshd installation you chose a specific number, enter it; otherwise, enter "22" as a default)
+    * chose "Allow the connection"
+    * check all the boxes "Domain", "Private", "Public"
+    * give it a name and description, e.g. "sshd" and "open port 22"
+    * press "Finish"
 
 #### Enabling arcfour cipher (for Windows)
 
