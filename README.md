@@ -187,13 +187,13 @@ When using a Windows machine as a SSHD server, it is necessary to install and co
     * `net start sshd` 
 * The last important step is to configure your Windows 7 firewall options, so that it allows for incoming connections. The full tutorial can be found: [Configure Windows Firewall](http://techtorials.me/cygwin/configure-windows-firewall/). The brief steps are listed below:
     * open Windows Firewall
-    * "Inbound Rules" -> "Actions" -> "New Rule"
-    * chose "Port"
-    * chose "TCP" and "Specific local ports" and enter the port number (if during sshd installation you chose a specific number, enter it; otherwise, enter "22" as a default)
-    * chose "Allow the connection"
-    * check all the boxes "Domain", "Private", "Public"
-    * give it a name and description, e.g. "sshd" and "open port 22"
-    * press "Finish"
+    * "Inbound Rules" -> "Actions" -> "New Rule"; press <Next>  
+    * chose "Port"; press <Next>
+    * chose "TCP" and "Specific local ports" and enter the port number (if during sshd installation you chose a specific number, enter it; otherwise, enter "22" as a default); press <Next>
+    * chose "Allow the connection"; press <Next>
+    * check all the boxes "Domain", "Private", "Public"; press <Next>
+    * give it a name and description, e.g. "sshd" and "open port 22"; press <Next>
+    * press <Finish>
 
 #### Enabling arcfour cipher (for Windows)
 
