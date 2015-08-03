@@ -4,7 +4,16 @@
 * [Quick Start](https://github.com/vicrucann/rshell-mat#quick-start)
 * [Main workflow description](https://github.com/vicrucann/rshell-mat#main-workflow-of-the-distributor-processes)
 * [Customizing and running your own Distributor](https://github.com/vicrucann/rshell-mat#customizing-and-running-your-own-distributor)
+    * [List of parameters](https://github.com/vicrucann/rshell-mat#list-of-parameters)
+    * [Providing your custom functions for split, merge and kernel](https://github.com/vicrucann/rshell-mat#providing-your-custom-functions-for-split-merge-and-wrapping-kernel)
+    * [LOG files](https://github.com/vicrucann/rshell-mat#log-files)
 * [Notes and tutorials](https://github.com/vicrucann/rshell-mat#notes)
+    * [Setting up SSH pubkey authentication](https://github.com/vicrucann/rshell-mat#setting-up-ssh-public-key-authentication)
+    * [Setting up SSHD server using Cygwin on Windows](https://github.com/vicrucann/rshell-mat#setting-up-sshd-server-using-cygwin-on-windows)
+    * [Enabling arcfour cipher (for Windows SSHD)](https://github.com/vicrucann/rshell-mat#enabling-arcfour-cipher-for-windows)
+    * [Specifics](https://github.com/vicrucann/rshell-mat#specifics)
+    * [Other info](https://github.com/vicrucann/rshell-mat#other)
+    * [Performace examples](https://github.com/vicrucann/rshell-mat#performance-examples)
 * [Contact](https://github.com/vicrucann/rshell-mat#for-questions-and-inqueries)
 
 ## Short description
@@ -58,6 +67,8 @@ These are the main steps that happen inside when the Distributor is run:
     * Mering the obtained data in order to use it further in Matlab local session   
 
 ## Customizing and running your own *Distributor*
+
+#### Main interface
 
 Use the following steps to run your `Distributor`:  
 *Distributor* variable declaration by running a constructor (see what are the input parameters in [parameter list](https://github.com/vicrucann/rshell-mat/tree/auto#list-of-parameters))  
