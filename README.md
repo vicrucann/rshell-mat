@@ -234,18 +234,19 @@ Two examples will be considered. The first is the provided Mandelbrot calculatio
 
 [Cryo3d](https://github.com/vicrucann/cryo3d)-whole-pipeline performance when using single head server vs. the same head and two remotes (the most expensive operations will be distributed between those two remotes). Different database sizes provided (the larger the more computationally expesive it is) and a sampling angle `theta` (the smaller the more computationally expensive it is).  
 ```
-------------------------------------------------------------------------------------   
-Test params / Configuration   |  Single machine     |    Head + cluster of two  
-------------------------------------------------------------------------------------   
-15K database, theta = 12      |        1.3  hrs     |             0.94  hrs  
-15K database, theta = 6       |        5.0  hrs     |             3.45  hrs  
-15K database, theta = 3       |        29   hrs     |             21    hrs  
-------------------------------------------------------------------------------------   
-67K database, theta = 12      |        00  hrs      |             2.1   hrs 
-67K database, theta = 6  
-67K database, theta = 3  
-------------------------------------------------------------------------------------   
+---------------------------------------------------------------------------------   
+Test params / Configuration   |  Single machine   |  Cluster of two / four\* 
+---------------------------------------------------------------------------------   
+15K database, theta = 12      |      1.3  hrs     |     0.94  hrs  
+15K database, theta = 6       |      5.0  hrs     |     3.45  hrs  
+15K database, theta = 3       |      29   hrs     |     21    hrs  
+---------------------------------------------------------------------------------   
+67K database, theta = 12      |      00   hrs     |     2.1   hrs /  1.65  hrs  
+67K database, theta = 6       |      00   hrs     |     0.0   hrs /  0.0   hrs  
+67K database, theta = 3       |     ~150  hrs     |     
+--------------------------------------------------------------------------------   
 ```
+\* All of the four remotes had different memory and GPU characteristics, therefore, some performed slower than others.
 
 ## For questions and inqueries 
 
