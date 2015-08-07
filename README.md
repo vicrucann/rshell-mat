@@ -241,12 +241,12 @@ Test params / Configuration   |  Single machine   |  Cluster of two / four *
 15K database, theta = 6       |      5.0  hrs     |     3.45  hrs  
 15K database, theta = 3       |      29   hrs     |     21    hrs  
 ---------------------------------------------------------------------------------   
-67K database, theta = 12      |      00   hrs     |     2.1   hrs /  1.65  hrs  
-67K database, theta = 6       |      00   hrs     |     0.0   hrs /  0.0   hrs  
-67K database, theta = 3       |     ~150  hrs     |     
+67K database, theta = 12      |      2.8  hrs     |     2.1   hrs /  1.65  hrs  
+67K database, theta = 6       |      12   hrs     |     0.0   hrs /  6.2   hrs  
+67K database, theta = 3       |     ~150  hrs     |     0.0   hrs / ~60    hrs  
 --------------------------------------------------------------------------------   
 ```
-\* All of the four remotes had different memory and GPU characteristics, therefore, some performed slower than others.
+\* All of the four remotes had different memory and GPU characteristics, therefore, some performed slower than others which means the performance numbers could be even better than displayed.
 
 ## For questions and inqueries 
 
