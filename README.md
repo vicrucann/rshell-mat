@@ -34,7 +34,7 @@ The scripts are able to distribute the data processing among Linux servers, Wind
 
 ## Quick start
 
-The Matlab interface class called `Distributor.m` manages the usage of all the Bash scripts. A Matlab example is provided - calculation of the Mandelbrot set. To run the example, you can use **test_rshell_mat.m** with the following steps:   
+The Matlab interface class called `Distributor.m` manages the usage of all the Bash scripts. A Matlab example is provided - two vector summation. To run the example, you can use **test_distributor.m** with the following steps:   
 * **IMPORTANT**: it is necessary to set up the login process through the SSH public-key, otherwise, the password prompts will not allow for the programm to continue (see [Notes](https://github.com/vicrucann/rshell-mat#notes) for tutorial examples).  
 * Before launching the Matlab, set up the SSH connection to the remotes by using *ssh-agent*. For example, run the following commands in your command line (it **must** be Linux environment):  
 ```
@@ -46,7 +46,7 @@ and provide the pass-phrase.
 ```  
 matlab
 ```   
-* Open the example script *test_rshell_mat.m*.   
+* Open the example script *test_distributor.m*.   
 * Inside the example Matlab script, insert your own settings for the remote servers (such as IP addresses, login, paths, etc). Your Matlab script is now ready to be run, since the split, kernel and merge functions are provided for the example.  
 * When all the calculation are finished and you no longer wish to use the SSH connection and Matlab, exit Matlab, and do not forget to remove the added key (run in a command line):  
 ```
@@ -127,9 +127,79 @@ These are the signatures of three functions that user must provide for their *Di
 
 The `split` and `merge` functions have their own `input` and `output` variables which are the Matlab `struct` data types that contain the necessary variables as fields.  
 
+Certain `input` fields must be passed and used correctly for any split or merge functions. The necessary parameters for any split function:  
+```
+% to be called from main script before we launch the distributor
+in_split = struct('ncluster', d.ncluster, 'path_vars', d.path_vars, ...);
+```  
+where `d` is out distributor. With these passed parameters, the skeletone of the split function has the next form:  
+```
+% user provided function which is called automatically inside launch()
+function out = split(input)
+    ...
+    % for each cluster
+    for i = 1 : input.ncluster
+        % split each variable into chunks
+        ...
+        % save each chunk and any other variables
+        % for the corresponding remote 'i'
+        save([input.path_vars, input.vars int2str(i) '.mat'], ...);
+    end
+% indicate the operation is done
+out = 1;
+end
+```
+The merge mandatory parameters are:  
+```
+% to be called from main script before we launch the distributor
+in_merge = struct('ncluster', d.ncluster, 'path_res', d.path_res, 'vars', d.vars, ...);
+```
+where `d` is our distributor.  With these passed parameters, the skeletone of the merge function has the next form:  
+```
+% user provided function which is called automatically inside launch()
+function out = merge(input)
+...
+% for each cluster file
+for i = 1 : input.ncluster 
+    % load the corresponding result file
+    load([input.path_res 'result_' input.vars int2str(i) '.mat']);
+    % save it to the result variable
+    ...
+end
+% save the result variable to the output structure
+out = struct(...);
+```
+
 The `kernel` function have two or four variables as input: `file_mat` is a `.mat` filename where Matlab workspace variables are kept; `res_fname` is a filename where the result will be written to for the current remote (string format); and `cache_vname` together with `ncache` are for indication a rootname of `.dat` file where Matlab cache variable is stored and the number of such files (the last two parameters might be ommited). 
 
 The necessity to have `.dat` files might not be obvious, but we use **rshell-mat** in conjunction with [CachedNDArray](https://github.com/vicrucann/cacharr) data structure for our [cryo3D](https://github.com/vicrucann/cryo3d) project (see [Notes](https://github.com/vicrucann/rshell-mat/tree/auto#notes) for more details), for that reason we figured out that not all the data can be stored and transferred as `.mat` file, but in case if there is any other disk data, it could be transferred and used as a `.dat` file.  
+
+The example of the basic `merge` function:  
+```
+function out = kernel(file_mat, res_fname, ~, ~)
+% load the corresponding variables into Matlab workspace
+load(file_mat);
+% operate the variables
+...
+% save the result variable to the provided name
+save(res_fname, ...);
+% indicate the operation is done
+out = 1;
+end
+```
+Note, you can always perform an output when debugging your kernel function by doing `fprintf()`. The output will be printed into a corresponding log (`.err` or `.out`) file **on the remote workfolder**. An example:  
+```
+function out = kernel(file_mat, res_fname, ~,~)
+load(file_mat);
+if (size(var)>x)
+    fprintf('The size of var is %i\n', size(var));
+    fprintf('x is %f\n', x);
+    ...
+end
+...
+end
+```
+In the sample code above, if the `if` condition met, two messages will be print into `.out` log file. Further on, if an error occurs, the error message will be printed to the `.err` log file. Both of the log files are kept on the corresponding remote workspace directory. 
 
 #### LOG files  
 
