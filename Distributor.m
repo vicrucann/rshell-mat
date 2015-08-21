@@ -79,7 +79,11 @@ classdef Distributor < handle
             if (obj.printout); 
                 fprintf('Splitting the data...'); 
             end
-            h_split(in_split);
+            out_split = h_split(in_split);
+            if ~out_split
+                fprintf('Split function must return 1 on successfull completion\n');
+                error('Split function did not succeed');
+            end
             if obj.printout; 
                 fprintf('done\n'); 
                 toc(t_split);
