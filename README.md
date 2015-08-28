@@ -312,7 +312,7 @@ Two examples will be considered. The first is the provided Mandelbrot calculatio
 ---------------------------------------------------------------------------------   
 Test params / Configuration   |  Single machine   |  Cluster of two / four * 
 ---------------------------------------------------------------------------------   
-15K database, theta = 12      |      1.3  hrs     |     0.94  hrs  /  1.2   hrs   
+15K database, theta = 12      |      1.3  hrs     |     0.94  hrs  /  1.1   hrs   
 15K database, theta = 6       |      5.0  hrs     |     3.45  hrs  / --
 15K database, theta = 3       |      29   hrs     |     21    hrs  / --
 ---------------------------------------------------------------------------------   
