@@ -56,7 +56,8 @@ classdef Distributor < handle
             system(['chmod u+x ' tester]);
             cmdStr=[tester ' ' obj.login ' ' obj.path_rem ' ' obj.ipaddrs];
             if ~obj.printout
-               cmdStr = [cmdStr ' >>' obj.path_res 'tester.log 2>>&' obj.path_res 'tester.err']; 
+               %cmdStr = [cmdStr ' >>' obj.path_res 'tester.log 2>>&' obj.path_res 'tester.err']; 
+               cmdStr = [cmdStr ' >>' obj.path_res 'tester.log'];
             end
             status = system(cmdStr);
             if (status==0)
@@ -102,7 +103,8 @@ classdef Distributor < handle
                 int2str(obj.sleeptime) ' ' obj.path_res];
             cmdStr = [cmdStr ' ' obj.cvars ' ' int2str(obj.ncache)]; % add cache params
             if ~obj.printout
-                cmdStr = [cmdStr ' >>' obj.path_res remmat '.log 2>>&' obj.path_res 'distributor.err'];
+                %cmdStr = [cmdStr ' >>' obj.path_res remmat '.log 2>>&' obj.path_res 'distributor.err'];
+                cmdStr = [cmdStr ' >>' obj.path_res remmat '.log'];
             end
             delete([obj.path_res 'result*.mat']); % clear any prev result data
             % perform the command
@@ -144,7 +146,8 @@ classdef Distributor < handle
             cmdStr = [transfer ' ' obj.login ' ' obj.path_rem ' ' ...
                     int2str(obj.ncache) ' ' path_cache ' ' cache ' ' obj.ipaddrs];
             if ~obj.printout
-                cmdStr = [cmdStr ' >>' obj.path_res 'transfer.log 2>>&' obj.path_res 'transfer.err'];
+                %cmdStr = [cmdStr ' >>' obj.path_res 'transfer.log 2>>&' obj.path_res 'transfer.err'];
+                cmdStr = [cmdStr ' >>' obj.path_res 'transfer.log'];
             end
             if (obj.printout)
                 t_dtransfer = tic;
@@ -173,7 +176,8 @@ classdef Distributor < handle
             cmdStr = [dscp ' ' obj.login ' ' obj.path_rem ' ' ...
                 path_func ' ' func_name ' ' obj.ipaddrs];
             if ~obj.printout
-                cmdStr = [cmdStr ' >>' obj.path_res 'transfer.log 2>>&' obj.path_res 'scpfunc.err'];
+                %cmdStr = [cmdStr ' >>' obj.path_res 'transfer.log 2>>&' obj.path_res 'scpfunc.err'];
+                cmdStr = [cmdStr ' >>' obj.path_res 'transfer.log'];
             end
             if (obj.printout)
                 t_dscp = tic;
